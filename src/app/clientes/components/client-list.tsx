@@ -16,6 +16,9 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { clientSchema, ClientSchema } from "../types/cliente.schema"
 import { useAddClient } from "@/app/hooks/useAddClient"
 
+import { useDebounce } from "@/app/hooks/useDebounce"
+import { useSearchCustomers } from "@/app/hooks/useSearchCustomers"
+
 interface ClientesListProps {
     onCreateVenta: (cliente: Customer) => void
 }
@@ -24,7 +27,11 @@ export function ClientesList({ onCreateVenta }: ClientesListProps) {
     const [searchTerm, setSearchTerm] = useState("")
     const [isModalOpen, setIsModalOpen] = useState(false)
 
-    const { data: clientes, isLoading, error } = useClients()
+    const debouncedSearchTerm = useDebounce(searchTerm, 500)
+
+    const { data: allClientes, isLoading: isLoadingAll, error: allClientsError } = useClients()
+    const { data: searchedClientes, isLoading: isLoadingSearch, error: searchError } = useSearchCustomers(debouncedSearchTerm)
+
     const { mutate: addClient, isPending: isAddingClient, error: addClientError } = useAddClient()
 
     const {
@@ -36,10 +43,9 @@ export function ClientesList({ onCreateVenta }: ClientesListProps) {
         resolver: zodResolver(clientSchema),
     })
 
-    const filteredClientes = clientes?.filter(
-        (cliente) =>
-            cliente.customerName.toLowerCase().includes(searchTerm.toLowerCase()) || cliente.identification.includes(searchTerm),
-    )
+    const clientes = debouncedSearchTerm.length > 2 ? searchedClientes : allClientes
+    const isLoading = debouncedSearchTerm.length > 2 ? isLoadingSearch : isLoadingAll
+    const error = debouncedSearchTerm.length > 2 ? searchError : allClientsError
 
     const onSubmit = (data: ClientSchema) => {
         addClient(data, {
@@ -160,7 +166,7 @@ export function ClientesList({ onCreateVenta }: ClientesListProps) {
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    {filteredClientes?.map((cliente) => (
+                                    {clientes?.map((cliente) => (
                                         <TableRow key={cliente.idCustomer}>
                                             <TableCell className="font-medium">{cliente.customerName}</TableCell>
                                             <TableCell>{cliente.identification}</TableCell>
@@ -191,7 +197,7 @@ export function ClientesList({ onCreateVenta }: ClientesListProps) {
                         </div>
                     )}
 
-                    {!isLoading && !error && filteredClientes?.length === 0 && (
+                    {!isLoading && !error && clientes?.length === 0 && (
                         <div className="text-center py-8 text-muted-foreground">
                             No se encontraron clientes que coincidan con la búsqueda
                         </div>
