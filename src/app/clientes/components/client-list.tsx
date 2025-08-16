@@ -1,25 +1,21 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { Search, Plus, ShoppingCart, Edit, Trash2, Loader2 } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { useState } from "react"
+import { Search, Loader2 } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogDescription } from "@/components/ui/dialog"
-import { Label } from "@/components/ui/label"
 import { useClients } from "@/app/hooks/useClients"
 import { Customer } from "../types/customer.dto"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { clientSchema, ClientSchema } from "../types/cliente.schema"
 import { useAddClient } from "@/app/hooks/useAddClient"
 import { useUpdateCustomer } from "@/app/hooks/useUpdateCustomer"
 import { useDeleteCustomer } from "@/app/hooks/useDeleteCustomer"
-
 import { useDebounce } from "@/app/hooks/useDebounce"
 import { useSearchCustomers } from "@/app/hooks/useSearchCustomers"
+import { ClientTable } from "./ClientTable"
+import { ClientFormDialog } from "./ClientFormDialog"
+import { DeleteConfirmationDialog } from "./DeleteConfirmationDialog"
+import { ClientSchema } from "../types/cliente.schema"
 
 interface ClientesListProps {
     onCreateVenta: (cliente: Customer) => void
@@ -40,28 +36,6 @@ export function ClientesList({ onCreateVenta }: ClientesListProps) {
     const { mutate: addClient, isPending: isAddingClient, error: addClientError } = useAddClient()
     const { mutate: updateClient, isPending: isUpdatingClient, error: updateClientError } = useUpdateCustomer()
     const { mutate: deleteClient, isPending: isDeletingClient } = useDeleteCustomer()
-
-    const {
-        register,
-        handleSubmit,
-        formState: { errors },
-        reset,
-    } = useForm<ClientSchema>({
-        resolver: zodResolver(clientSchema),
-    })
-
-    useEffect(() => {
-        if (editingClient) {
-            reset(editingClient)
-        } else {
-            reset({
-                customerName: "",
-                identification: "",
-                phone: "",
-                address: "",
-            })
-        }
-    }, [editingClient, reset])
 
     const clientes = debouncedSearchTerm.length > 2 ? searchedClientes : allClientes
     const isLoading = debouncedSearchTerm.length > 2 ? isLoadingSearch : isLoadingAll
@@ -118,70 +92,15 @@ export function ClientesList({ onCreateVenta }: ClientesListProps) {
                 <CardHeader>
                     <div className="flex items-center justify-between">
                         <CardTitle className="text-2xl font-semibold text-foreground">Gestión de Clientes</CardTitle>
-                        <Dialog open={isModalOpen} onOpenChange={handleModalOpenChange}>
-                            <DialogTrigger asChild>
-                                <Button className="bg-primary hover:bg-primary/90">
-                                    <Plus className="w-4 h-4 mr-2" />
-                                    Nuevo Cliente
-                                </Button>
-                            </DialogTrigger>
-                            <DialogContent className="sm:max-w-md">
-                                <DialogHeader>
-                                    <DialogTitle>{editingClient ? "Editar Cliente" : "Registrar Nuevo Cliente"}</DialogTitle>
-                                </DialogHeader>
-                                <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                                    <div>
-                                        <Label htmlFor="customerName">Nombre Completo</Label>
-                                        <Input
-                                            id="customerName"
-                                            {...register("customerName")}
-                                            placeholder="Ingrese el nombre completo"
-                                        />
-                                        {errors.customerName && <p className="text-red-500 text-xs mt-1">{errors.customerName.message}</p>}
-                                    </div>
-                                    <div>
-                                        <Label htmlFor="identification">Identificación</Label>
-                                        <Input
-                                            id="identification"
-                                            {...register("identification")}
-                                            placeholder="000-000000-0000A"
-                                        />
-                                        {errors.identification && <p className="text-red-500 text-xs mt-1">{errors.identification.message}</p>}
-                                    </div>
-                                    <div>
-                                        <Label htmlFor="phone">Teléfono</Label>
-                                        <Input
-                                            id="phone"
-                                            {...register("phone")}
-                                            placeholder="Número de teléfono de 8 dígitos"
-                                        />
-                                        {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone.message}</p>}
-                                    </div>
-                                    <div>
-                                        <Label htmlFor="address">Dirección</Label>
-                                        <Input
-                                            id="address"
-                                            {...register("address")}
-                                            placeholder="Dirección completa"
-                                        />
-                                        {errors.address && <p className="text-red-500 text-xs mt-1">{errors.address.message}</p>}
-                                    </div>
-                                    {(addClientError || updateClientError) && (
-                                        <Alert variant="destructive">
-                                            <AlertDescription>{addClientError?.message || updateClientError?.message}</AlertDescription>
-                                        </Alert>
-                                    )}
-                                    <div className="flex gap-2 pt-4">
-                                        <Button type="submit" disabled={isAddingClient || isUpdatingClient} className="flex-1 bg-primary hover:bg-primary/90">
-                                            {isAddingClient || isUpdatingClient ? <Loader2 className="w-4 h-4 animate-spin" /> : "Guardar Cliente"}
-                                        </Button>
-                                        <Button variant="outline" onClick={() => handleModalOpenChange(false)} className="flex-1">
-                                            Cancelar
-                                        </Button>
-                                    </div>
-                                </form>
-                            </DialogContent>
-                        </Dialog>
+                        <ClientFormDialog
+                            isOpen={isModalOpen}
+                            onOpenChange={handleModalOpenChange}
+                            onSubmit={onSubmit}
+                            editingClient={editingClient}
+                            isAdding={isAddingClient}
+                            isUpdating={isUpdatingClient}
+                            error={addClientError || updateClientError}
+                        />
                     </div>
                 </CardHeader>
                 <CardContent>
@@ -209,48 +128,15 @@ export function ClientesList({ onCreateVenta }: ClientesListProps) {
                         </Alert>
                     )}
 
-                    {!isLoading && !error && (
-                        <div className="rounded-md border">
-                            <Table>
-                                <TableHeader>
-                                    <TableRow>
-                                        <TableHead>Nombre</TableHead>
-                                        <TableHead>Identificación</TableHead>
-                                        <TableHead>Teléfono</TableHead>
-                                        <TableHead>Dirección</TableHead>
-                                        <TableHead className="text-right">Acciones</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {clientes?.map((cliente) => (
-                                        <TableRow key={cliente.idCustomer}>
-                                            <TableCell className="font-medium">{cliente.customerName}</TableCell>
-                                            <TableCell>{cliente.identification}</TableCell>
-                                            <TableCell>{cliente.phone}</TableCell>
-                                            <TableCell>{cliente.address}</TableCell>
-                                            <TableCell className="text-right">
-                                                <div className="flex gap-2 justify-end">
-                                                    <Button
-                                                        size="sm"
-                                                        onClick={() => onCreateVenta(cliente)}
-                                                        className="bg-accent hover:bg-accent/90"
-                                                    >
-                                                        <ShoppingCart className="w-4 h-4 mr-1" />
-                                                        Crear Venta
-                                                    </Button>
-                                                    <Button size="sm" variant="outline" onClick={() => handleEditClick(cliente)}>
-                                                        <Edit className="w-4 h-4" />
-                                                    </Button>
-                                                    <Button size="sm" variant="outline" onClick={() => handleDeleteClick(cliente.idCustomer)}>
-                                                        <Trash2 className="w-4 h-4" />
-                                                    </Button>
-                                                </div>
-                                            </TableCell>
-                                        </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        </div>
+                    {!isLoading && !error && clientes && (
+                        <ClientTable
+                            clients={clientes}
+                            onEdit={handleEditClick}
+                            onDelete={handleDeleteClick}
+                            onCreateSale={onCreateVenta}
+                            isDeleting={isDeletingClient}
+                            deletingClientId={deletingClientId}
+                        />
                     )}
 
                     {!isLoading && !error && clientes?.length === 0 && (
@@ -261,22 +147,12 @@ export function ClientesList({ onCreateVenta }: ClientesListProps) {
                 </CardContent>
             </Card>
 
-            <Dialog open={isDeleteModalOpen} onOpenChange={setIsDeleteModalOpen}>
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle>Confirmar Eliminación</DialogTitle>
-                        <DialogDescription>
-                            ¿Está seguro de que desea eliminar este cliente? Esta acción no se puede deshacer.
-                        </DialogDescription>
-                    </DialogHeader>
-                    <DialogFooter>
-                        <Button variant="outline" onClick={() => setIsDeleteModalOpen(false)}>Cancelar</Button>
-                        <Button variant="destructive" onClick={confirmDelete} disabled={isDeletingClient}>
-                            {isDeletingClient ? <Loader2 className="w-4 h-4 animate-spin" /> : "Eliminar"}
-                        </Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
+            <DeleteConfirmationDialog
+                isOpen={isDeleteModalOpen}
+                onOpenChange={setIsDeleteModalOpen}
+                onConfirm={confirmDelete}
+                isDeleting={isDeletingClient}
+            />
         </div>
     )
 }
