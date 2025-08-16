@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogDescription } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 import { useClients } from "@/app/hooks/useClients"
 import { Customer } from "../types/customer.dto"
@@ -16,6 +16,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { clientSchema, ClientSchema } from "../types/cliente.schema"
 import { useAddClient } from "@/app/hooks/useAddClient"
 import { useUpdateCustomer } from "@/app/hooks/useUpdateCustomer"
+import { useDeleteCustomer } from "@/app/hooks/useDeleteCustomer"
 
 import { useDebounce } from "@/app/hooks/useDebounce"
 import { useSearchCustomers } from "@/app/hooks/useSearchCustomers"
@@ -27,7 +28,9 @@ interface ClientesListProps {
 export function ClientesList({ onCreateVenta }: ClientesListProps) {
     const [searchTerm, setSearchTerm] = useState("")
     const [isModalOpen, setIsModalOpen] = useState(false)
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
     const [editingClient, setEditingClient] = useState<Customer | null>(null)
+    const [deletingClientId, setDeletingClientId] = useState<number | null>(null)
 
     const debouncedSearchTerm = useDebounce(searchTerm, 500)
 
@@ -36,6 +39,7 @@ export function ClientesList({ onCreateVenta }: ClientesListProps) {
 
     const { mutate: addClient, isPending: isAddingClient, error: addClientError } = useAddClient()
     const { mutate: updateClient, isPending: isUpdatingClient, error: updateClientError } = useUpdateCustomer()
+    const { mutate: deleteClient, isPending: isDeletingClient } = useDeleteCustomer()
 
     const {
         register,
@@ -83,6 +87,22 @@ export function ClientesList({ onCreateVenta }: ClientesListProps) {
     const handleEditClick = (cliente: Customer) => {
         setEditingClient(cliente)
         setIsModalOpen(true)
+    }
+
+    const handleDeleteClick = (clientId: number) => {
+        setDeletingClientId(clientId)
+        setIsDeleteModalOpen(true)
+    }
+
+    const confirmDelete = () => {
+        if (deletingClientId) {
+            deleteClient(deletingClientId, {
+                onSuccess: () => {
+                    setIsDeleteModalOpen(false)
+                    setDeletingClientId(null)
+                }
+            })
+        }
     }
 
     const handleModalOpenChange = (isOpen: boolean) => {
@@ -221,7 +241,7 @@ export function ClientesList({ onCreateVenta }: ClientesListProps) {
                                                     <Button size="sm" variant="outline" onClick={() => handleEditClick(cliente)}>
                                                         <Edit className="w-4 h-4" />
                                                     </Button>
-                                                    <Button size="sm" variant="outline">
+                                                    <Button size="sm" variant="outline" onClick={() => handleDeleteClick(cliente.idCustomer)}>
                                                         <Trash2 className="w-4 h-4" />
                                                     </Button>
                                                 </div>
@@ -240,6 +260,23 @@ export function ClientesList({ onCreateVenta }: ClientesListProps) {
                     )}
                 </CardContent>
             </Card>
+
+            <Dialog open={isDeleteModalOpen} onOpenChange={setIsDeleteModalOpen}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Confirmar Eliminación</DialogTitle>
+                        <DialogDescription>
+                            ¿Está seguro de que desea eliminar este cliente? Esta acción no se puede deshacer.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setIsDeleteModalOpen(false)}>Cancelar</Button>
+                        <Button variant="destructive" onClick={confirmDelete} disabled={isDeletingClient}>
+                            {isDeletingClient ? <Loader2 className="w-4 h-4 animate-spin" /> : "Eliminar"}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     )
 }
