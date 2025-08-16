@@ -53,11 +53,11 @@ export function Sidebar({ children }: SidebarProps) {
     }
 
     return (
-        <div className="flex h-screen">
+        <div className="relative min-h-screen">
             {/* Sidebar */}
             <div
                 className={cn(
-                    "bg-sidebar border-r border-sidebar-border transition-all duration-300",
+                    "fixed h-full bg-sidebar border-r border-sidebar-border transition-all duration-300 z-10",
                     isCollapsed ? "w-16" : "w-64"
                 )}
             >
@@ -95,7 +95,7 @@ export function Sidebar({ children }: SidebarProps) {
                                             isActive
                                                 ? "bg-primary text-primary-foreground"
                                                 : "text-foreground hover:bg-primary/80 hover:text-primary-foreground",
-                                            isCollapsed && "px-2"
+                                            isCollapsed && "px-2 justify-center"
                                         )}
                                     >
                                         <Icon className="h-4 w-4 flex-shrink-0" />
@@ -108,7 +108,10 @@ export function Sidebar({ children }: SidebarProps) {
                 </div>
             </div>
 
-            <main className="flex-1">{children}</main>
+            <main className={cn(
+                "flex-1 transition-all duration-300 overflow-y-auto",
+                isCollapsed ? "ml-16" : "ml-64"
+            )}>{children}</main>
         </div>
     )
 }
