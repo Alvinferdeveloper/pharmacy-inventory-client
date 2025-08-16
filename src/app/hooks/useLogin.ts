@@ -7,7 +7,8 @@ const login = async (credentials: LoginDto) => {
   try{
     const response = await axios.post(
       `${process.env.NEXT_PUBLIC_API_URL}/auth/login`,
-      credentials
+      credentials,
+      { withCredentials: true }
     );
 
     return response.data;

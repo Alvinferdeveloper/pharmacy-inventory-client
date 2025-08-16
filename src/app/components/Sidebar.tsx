@@ -79,8 +79,8 @@ export function Sidebar({ children }: SidebarProps) {
                                         className={cn(
                                             "w-full justify-start gap-3",
                                             isActive
-                                                ? "bg-sidebar-primary text-sidebar-primary-foreground"
-                                                : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+                                                ? "bg-primary text-primary-foreground"
+                                                : "text-foreground hover:bg-primary/80 hover:text-primary-foreground",
                                             isCollapsed && "px-2"
                                         )}
                                     >
