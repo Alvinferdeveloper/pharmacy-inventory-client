@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Search, Plus, ShoppingCart, Edit, Trash2, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -15,6 +15,7 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { clientSchema, ClientSchema } from "../types/cliente.schema"
 import { useAddClient } from "@/app/hooks/useAddClient"
+import { useUpdateCustomer } from "@/app/hooks/useUpdateCustomer"
 
 import { useDebounce } from "@/app/hooks/useDebounce"
 import { useSearchCustomers } from "@/app/hooks/useSearchCustomers"
@@ -26,6 +27,7 @@ interface ClientesListProps {
 export function ClientesList({ onCreateVenta }: ClientesListProps) {
     const [searchTerm, setSearchTerm] = useState("")
     const [isModalOpen, setIsModalOpen] = useState(false)
+    const [editingClient, setEditingClient] = useState<Customer | null>(null)
 
     const debouncedSearchTerm = useDebounce(searchTerm, 500)
 
@@ -33,6 +35,7 @@ export function ClientesList({ onCreateVenta }: ClientesListProps) {
     const { data: searchedClientes, isLoading: isLoadingSearch, error: searchError } = useSearchCustomers(debouncedSearchTerm)
 
     const { mutate: addClient, isPending: isAddingClient, error: addClientError } = useAddClient()
+    const { mutate: updateClient, isPending: isUpdatingClient, error: updateClientError } = useUpdateCustomer()
 
     const {
         register,
@@ -43,17 +46,50 @@ export function ClientesList({ onCreateVenta }: ClientesListProps) {
         resolver: zodResolver(clientSchema),
     })
 
+    useEffect(() => {
+        if (editingClient) {
+            reset(editingClient)
+        } else {
+            reset({
+                customerName: "",
+                identification: "",
+                phone: "",
+                address: "",
+            })
+        }
+    }, [editingClient, reset])
+
     const clientes = debouncedSearchTerm.length > 2 ? searchedClientes : allClientes
     const isLoading = debouncedSearchTerm.length > 2 ? isLoadingSearch : isLoadingAll
     const error = debouncedSearchTerm.length > 2 ? searchError : allClientsError
 
     const onSubmit = (data: ClientSchema) => {
-        addClient(data, {
-            onSuccess: () => {
-                setIsModalOpen(false)
-                reset()
-            },
-        })
+        if (editingClient) {
+            updateClient({ id: editingClient.idCustomer, payload: data }, {
+                onSuccess: () => {
+                    setIsModalOpen(false)
+                    setEditingClient(null)
+                }
+            })
+        } else {
+            addClient(data, {
+                onSuccess: () => {
+                    setIsModalOpen(false)
+                },
+            })
+        }
+    }
+
+    const handleEditClick = (cliente: Customer) => {
+        setEditingClient(cliente)
+        setIsModalOpen(true)
+    }
+
+    const handleModalOpenChange = (isOpen: boolean) => {
+        setIsModalOpen(isOpen)
+        if (!isOpen) {
+            setEditingClient(null)
+        }
     }
 
     return (
@@ -62,7 +98,7 @@ export function ClientesList({ onCreateVenta }: ClientesListProps) {
                 <CardHeader>
                     <div className="flex items-center justify-between">
                         <CardTitle className="text-2xl font-semibold text-foreground">Gestión de Clientes</CardTitle>
-                        <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+                        <Dialog open={isModalOpen} onOpenChange={handleModalOpenChange}>
                             <DialogTrigger asChild>
                                 <Button className="bg-primary hover:bg-primary/90">
                                     <Plus className="w-4 h-4 mr-2" />
@@ -71,7 +107,7 @@ export function ClientesList({ onCreateVenta }: ClientesListProps) {
                             </DialogTrigger>
                             <DialogContent className="sm:max-w-md">
                                 <DialogHeader>
-                                    <DialogTitle>Registrar Nuevo Cliente</DialogTitle>
+                                    <DialogTitle>{editingClient ? "Editar Cliente" : "Registrar Nuevo Cliente"}</DialogTitle>
                                 </DialogHeader>
                                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                                     <div>
@@ -110,16 +146,16 @@ export function ClientesList({ onCreateVenta }: ClientesListProps) {
                                         />
                                         {errors.address && <p className="text-red-500 text-xs mt-1">{errors.address.message}</p>}
                                     </div>
-                                    {addClientError && (
+                                    {(addClientError || updateClientError) && (
                                         <Alert variant="destructive">
-                                            <AlertDescription>{addClientError.message}</AlertDescription>
+                                            <AlertDescription>{addClientError?.message || updateClientError?.message}</AlertDescription>
                                         </Alert>
                                     )}
                                     <div className="flex gap-2 pt-4">
-                                        <Button type="submit" disabled={isAddingClient} className="flex-1 bg-primary hover:bg-primary/90">
-                                            {isAddingClient ? <Loader2 className="w-4 h-4 animate-spin" /> : "Guardar Cliente"}
+                                        <Button type="submit" disabled={isAddingClient || isUpdatingClient} className="flex-1 bg-primary hover:bg-primary/90">
+                                            {isAddingClient || isUpdatingClient ? <Loader2 className="w-4 h-4 animate-spin" /> : "Guardar Cliente"}
                                         </Button>
-                                        <Button variant="outline" onClick={() => setIsModalOpen(false)} className="flex-1">
+                                        <Button variant="outline" onClick={() => handleModalOpenChange(false)} className="flex-1">
                                             Cancelar
                                         </Button>
                                     </div>
@@ -182,7 +218,7 @@ export function ClientesList({ onCreateVenta }: ClientesListProps) {
                                                         <ShoppingCart className="w-4 h-4 mr-1" />
                                                         Crear Venta
                                                     </Button>
-                                                    <Button size="sm" variant="outline">
+                                                    <Button size="sm" variant="outline" onClick={() => handleEditClick(cliente)}>
                                                         <Edit className="w-4 h-4" />
                                                     </Button>
                                                     <Button size="sm" variant="outline">
