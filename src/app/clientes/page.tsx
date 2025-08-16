@@ -25,7 +25,7 @@ export default function ClientesPage() {
         {vistaActual === "clientes" ? (
           <ClientesList onCreateVenta={handleCreateVenta} />
         ) : (
-          <VentaFlow cliente={clienteSeleccionado} onBack={handleBackToClientes} />
+          clienteSeleccionado && <VentaFlow customer={clienteSeleccionado} onBack={handleBackToClientes} />
         )}
       </main>
     </div>

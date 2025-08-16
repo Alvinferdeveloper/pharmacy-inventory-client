@@ -1,135 +1,100 @@
 "use client"
 
 import { useState } from "react"
-import { ArrowLeft, Search, Plus, Minus, ShoppingCart, Check } from "lucide-react"
+import { ArrowLeft, Search, Plus, Minus, ShoppingCart, Check, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
+import { useProducts, Product } from "@/app/hooks/useProducts"
+import { useSaveSale } from "@/app/hooks/useSaveSale"
+import { Customer } from "../types/customer.dto"
 
-interface Medicamento {
-  id: number
-  nombre: string
-  precio: number
-  stock: number
-  categoria: string
-  descripcion: string
+interface CartItem {
+  product: Product
+  quantity: number
 }
 
-interface ItemVenta {
-  medicamento: Medicamento
-  cantidad: number
-}
-
-interface VentaFlowProps {
-  cliente: any
+interface SaleFlowProps {
+  customer: Customer
   onBack: () => void
 }
 
-export function VentaFlow({ cliente, onBack }: VentaFlowProps) {
+export function VentaFlow({ customer, onBack }: SaleFlowProps) {
   const [searchTerm, setSearchTerm] = useState("")
-  const [carrito, setCarrito] = useState<ItemVenta[]>([])
-  const [ventaGuardada, setVentaGuardada] = useState(false)
+  const [cart, setCart] = useState<CartItem[]>([])
+  const [saleSaved, setSaleSaved] = useState(false)
+  const { data: products, isLoading, error } = useProducts()
+  const { mutate: saveSaleMutation, isPending: isSaving, error: saveError } = useSaveSale()
 
-  // Mock data de medicamentos
-  const medicamentos: Medicamento[] = [
-    {
-      id: 1,
-      nombre: "Acetaminofén 500mg",
-      precio: 2500,
-      stock: 50,
-      categoria: "Analgésicos",
-      descripcion: "Tabletas para dolor y fiebre",
-    },
-    {
-      id: 2,
-      nombre: "Ibuprofeno 400mg",
-      precio: 3200,
-      stock: 30,
-      categoria: "Antiinflamatorios",
-      descripcion: "Cápsulas antiinflamatorias",
-    },
-    {
-      id: 3,
-      nombre: "Amoxicilina 500mg",
-      precio: 8500,
-      stock: 25,
-      categoria: "Antibióticos",
-      descripcion: "Cápsulas antibióticas",
-    },
-    {
-      id: 4,
-      nombre: "Loratadina 10mg",
-      precio: 4200,
-      stock: 40,
-      categoria: "Antihistamínicos",
-      descripcion: "Tabletas para alergias",
-    },
-    {
-      id: 5,
-      nombre: "Omeprazol 20mg",
-      precio: 6800,
-      stock: 35,
-      categoria: "Gastroprotectores",
-      descripcion: "Cápsulas para acidez",
-    },
-  ]
+  const filteredProducts = products?.filter(
+    (product) =>
+      product.productName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product.category.categoryName.toLowerCase().includes(searchTerm.toLowerCase()),
+  ) || []
 
-  const filteredMedicamentos = medicamentos.filter(
-    (med) =>
-      med.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      med.categoria.toLowerCase().includes(searchTerm.toLowerCase()),
-  )
+  const addToCart = (product: Product) => {
+    const existingItem = cart.find((item) => item.product.idProduct === product.idProduct)
 
-  const agregarAlCarrito = (medicamento: Medicamento) => {
-    const itemExistente = carrito.find((item) => item.medicamento.id === medicamento.id)
-
-    if (itemExistente) {
-      if (itemExistente.cantidad < medicamento.stock) {
-        setCarrito(
-          carrito.map((item) =>
-            item.medicamento.id === medicamento.id ? { ...item, cantidad: item.cantidad + 1 } : item,
+    if (existingItem) {
+      if (existingItem.quantity < product.stock) {
+        setCart(
+          cart.map((item) =>
+            item.product.idProduct === product.idProduct ? { ...item, quantity: item.quantity + 1 } : item,
           ),
         )
       }
     } else {
-      setCarrito([...carrito, { medicamento, cantidad: 1 }])
+      setCart([...cart, { product, quantity: 1 }])
     }
   }
 
-  const actualizarCantidad = (medicamentoId: number, nuevaCantidad: number) => {
-    if (nuevaCantidad === 0) {
-      setCarrito(carrito.filter((item) => item.medicamento.id !== medicamentoId))
+  const updateQuantity = (productId: number, newQuantity: number) => {
+    if (newQuantity === 0) {
+      setCart(cart.filter((item) => item.product.idProduct !== productId))
     } else {
-      const medicamento = medicamentos.find((m) => m.id === medicamentoId)
-      if (medicamento && nuevaCantidad <= medicamento.stock) {
-        setCarrito(
-          carrito.map((item) => (item.medicamento.id === medicamentoId ? { ...item, cantidad: nuevaCantidad } : item)),
+      const product = products?.find((p) => p.idProduct === productId)
+      if (product && newQuantity <= product.stock) {
+        setCart(
+          cart.map((item) => (item.product.idProduct === productId ? { ...item, quantity: newQuantity } : item)),
         )
       }
     }
   }
 
-  const calcularTotal = () => {
-    return carrito.reduce((total, item) => total + item.medicamento.precio * item.cantidad, 0)
+  const calculateTotal = () => {
+    return cart.reduce((total, item) => total + parseFloat(item.product.sellingPrice) * item.quantity, 0)
   }
 
-  const guardarVenta = () => {
-    // Aquí se guardaría la venta en la base de datos
-    console.log("Guardando venta:", {
-      cliente,
-      items: carrito,
-      total: calcularTotal(),
-      fecha: new Date(),
+  const handleSaveSale = () => {
+    const saleData = {
+      customerId: customer.idCustomer,
+      products: cart.map(item => ({
+        productId: item.product.idProduct,
+        quantity: item.quantity
+      }))
+    }
+
+    saveSaleMutation(saleData, {
+      onSuccess: () => {
+        setSaleSaved(true)
+        setTimeout(() => {
+          onBack()
+        }, 2000)
+      }
     })
-    setVentaGuardada(true)
-    setTimeout(() => {
-      onBack()
-    }, 2000)
   }
 
-  if (ventaGuardada) {
+  if (isLoading) {
+    return <div>Cargando productos...</div>
+  }
+
+  if (error) {
+    return <div>Error al cargar los productos: {error.message}</div>
+  }
+
+  if (saleSaved) {
     return (
       <div className="p-6 flex items-center justify-center min-h-[400px]">
         <Card className="w-full max-w-md text-center">
@@ -138,7 +103,7 @@ export function VentaFlow({ cliente, onBack }: VentaFlowProps) {
               <Check className="w-8 h-8 text-primary" />
             </div>
             <h3 className="text-xl font-semibold mb-2">¡Venta Guardada!</h3>
-            <p className="text-muted-foreground mb-4">La venta para {cliente.nombre} se ha registrado exitosamente.</p>
+            <p className="text-muted-foreground mb-4">La venta para {customer.customerName} se ha registrado exitosamente.</p>
             <p className="text-sm text-muted-foreground">Regresando a la lista de clientes...</p>
           </CardContent>
         </Card>
@@ -157,18 +122,18 @@ export function VentaFlow({ cliente, onBack }: VentaFlowProps) {
           <div>
             <h1 className="text-2xl font-semibold">Nueva Venta</h1>
             <p className="text-muted-foreground">
-              Cliente: <span className="font-medium">{cliente.nombre}</span> - {cliente.identificacion}
+              Cliente: <span className="font-medium">{customer.customerName}</span> - {customer.identification}
             </p>
           </div>
           <div className="flex items-center gap-2">
             <ShoppingCart className="w-5 h-5" />
-            <Badge variant="secondary">{carrito.length} items</Badge>
+            <Badge variant="secondary">{cart.length} items</Badge>
           </div>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Lista de Medicamentos */}
+        {/* Product List */}
         <div className="lg:col-span-2">
           <Card>
             <CardHeader>
@@ -185,37 +150,37 @@ export function VentaFlow({ cliente, onBack }: VentaFlowProps) {
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                {filteredMedicamentos.map((medicamento) => {
-                  const itemEnCarrito = carrito.find((item) => item.medicamento.id === medicamento.id)
-                  const cantidadEnCarrito = itemEnCarrito?.cantidad || 0
+                {filteredProducts.map((product) => {
+                  const itemInCart = cart.find((item) => item.product.idProduct === product.idProduct)
+                  const quantityInCart = itemInCart?.quantity || 0
 
                   return (
-                    <div key={medicamento.id} className="flex items-center justify-between p-4 border rounded-lg">
+                    <div key={product.idProduct} className="flex items-center justify-between p-4 border rounded-lg">
                       <div className="flex-1">
-                        <h4 className="font-medium">{medicamento.nombre}</h4>
-                        <p className="text-sm text-muted-foreground">{medicamento.descripcion}</p>
+                        <h4 className="font-medium">{product.productName}</h4>
+                        <p className="text-sm text-muted-foreground">{product.description}</p>
                         <div className="flex items-center gap-4 mt-2">
-                          <Badge variant="outline">{medicamento.categoria}</Badge>
-                          <span className="text-sm">Stock: {medicamento.stock}</span>
-                          <span className="font-medium">${medicamento.precio.toLocaleString()}</span>
+                          <Badge variant="outline">{product.category.categoryName}</Badge>
+                          <span className="text-sm">Stock: {product.stock}</span>
+                          <span className="font-medium">${parseFloat(product.sellingPrice).toLocaleString()}</span>
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        {cantidadEnCarrito > 0 ? (
+                        {quantityInCart > 0 ? (
                           <div className="flex items-center gap-2">
                             <Button
                               size="sm"
                               variant="outline"
-                              onClick={() => actualizarCantidad(medicamento.id, cantidadEnCarrito - 1)}
+                              onClick={() => updateQuantity(product.idProduct, quantityInCart - 1)}
                             >
                               <Minus className="w-4 h-4" />
                             </Button>
-                            <span className="w-8 text-center">{cantidadEnCarrito}</span>
+                            <span className="w-8 text-center">{quantityInCart}</span>
                             <Button
                               size="sm"
                               variant="outline"
-                              onClick={() => actualizarCantidad(medicamento.id, cantidadEnCarrito + 1)}
-                              disabled={cantidadEnCarrito >= medicamento.stock}
+                              onClick={() => updateQuantity(product.idProduct, quantityInCart + 1)}
+                              disabled={quantityInCart >= product.stock}
                             >
                               <Plus className="w-4 h-4" />
                             </Button>
@@ -223,8 +188,8 @@ export function VentaFlow({ cliente, onBack }: VentaFlowProps) {
                         ) : (
                           <Button
                             size="sm"
-                            onClick={() => agregarAlCarrito(medicamento)}
-                            disabled={medicamento.stock === 0}
+                            onClick={() => addToCart(product)}
+                            disabled={product.stock === 0}
                             className="bg-accent hover:bg-accent/90"
                           >
                             <Plus className="w-4 h-4 mr-1" />
@@ -240,27 +205,27 @@ export function VentaFlow({ cliente, onBack }: VentaFlowProps) {
           </Card>
         </div>
 
-        {/* Carrito de Compras */}
+        {/* Shopping Cart */}
         <div>
           <Card className="sticky top-6">
             <CardHeader>
               <CardTitle>Resumen de Venta</CardTitle>
             </CardHeader>
             <CardContent>
-              {carrito.length === 0 ? (
+              {cart.length === 0 ? (
                 <p className="text-muted-foreground text-center py-4">No hay medicamentos seleccionados</p>
               ) : (
                 <div className="space-y-4">
-                  {carrito.map((item) => (
-                    <div key={item.medicamento.id} className="flex justify-between items-start">
+                  {cart.map((item) => (
+                    <div key={item.product.idProduct} className="flex justify-between items-start">
                       <div className="flex-1">
-                        <h5 className="font-medium text-sm">{item.medicamento.nombre}</h5>
+                        <h5 className="font-medium text-sm">{item.product.productName}</h5>
                         <p className="text-xs text-muted-foreground">
-                          ${item.medicamento.precio.toLocaleString()} x {item.cantidad}
+                          ${parseFloat(item.product.sellingPrice).toLocaleString()} x {item.quantity}
                         </p>
                       </div>
                       <div className="text-right">
-                        <p className="font-medium">${(item.medicamento.precio * item.cantidad).toLocaleString()}</p>
+                        <p className="font-medium">${(parseFloat(item.product.sellingPrice) * item.quantity).toLocaleString()}</p>
                       </div>
                     </div>
                   ))}
@@ -269,17 +234,27 @@ export function VentaFlow({ cliente, onBack }: VentaFlowProps) {
 
                   <div className="flex justify-between items-center font-semibold text-lg">
                     <span>Total:</span>
-                    <span>${calcularTotal().toLocaleString()}</span>
+                    <span>${calculateTotal().toLocaleString()}</span>
                   </div>
 
                   <Button
-                    onClick={guardarVenta}
+                    onClick={handleSaveSale}
                     className="w-full bg-primary hover:bg-primary/90"
-                    disabled={carrito.length === 0}
+                    disabled={cart.length === 0 || isSaving}
                   >
-                    <Check className="w-4 h-4 mr-2" />
-                    Guardar Compra
+                    {isSaving ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Guardando...
+                      </>
+                    ) : (
+                      <>
+                        <Check className="w-4 h-4 mr-2" />
+                        Guardar Compra
+                      </>
+                    )}
                   </Button>
+                  {saveError && <p className="text-red-500 text-sm mt-2">Error al guardar la venta: {saveError.message}</p>}
                 </div>
               )}
             </CardContent>
