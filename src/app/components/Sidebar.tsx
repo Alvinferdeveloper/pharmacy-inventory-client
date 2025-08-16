@@ -1,21 +1,18 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { LayoutDashboard, Users, Pill, UserCheck, FolderOpen, Truck, Menu, X } from "lucide-react"
+import { useCurrentUser } from "@/app/hooks/useCurrentUser"
+import { useUser } from "@/app/context/UserContext"
 
 const USER_ROLES = {
     Administrator: ["dashboard", "clientes", "medicamentos", "usuarios", "categorias", "proveedores"],
     Salesman: ["clientes", "medicamentos", "categorias"],
     Consultant: ["dashboard", "clientes", "medicamentos"],
-}
-
-const currentUser = {
-    name: "Juan Pérez",
-    role: "Salesman" as keyof typeof USER_ROLES,
 }
 
 const navigationItems = [
@@ -34,9 +31,26 @@ interface SidebarProps {
 export function Sidebar({ children }: SidebarProps) {
     const [isCollapsed, setIsCollapsed] = useState(false)
     const pathname = usePathname()
-    const allowedItems = navigationItems.filter((item) =>
-        USER_ROLES[currentUser.role].includes(item.key)
-    )
+    const { data: currentUser, isLoading, isError } = useCurrentUser()
+    const { user, setUser } = useUser()
+
+    useEffect(() => {
+        if (currentUser) {
+            setUser(currentUser)
+        }
+    }, [currentUser, setUser])
+
+    const allowedItems = user ? navigationItems.filter((item) =>
+        USER_ROLES[user.roles[0] as keyof typeof USER_ROLES]?.includes(item.key)
+    ) : []
+
+    if (isLoading) {
+        return <div>Loading...</div>
+    }
+
+    if (isError) {
+        return <div>Error fetching user</div>
+    }
 
     return (
         <div className="flex h-screen">
@@ -50,11 +64,11 @@ export function Sidebar({ children }: SidebarProps) {
                 <div className="flex h-full flex-col">
                     {/* Header */}
                     <div className="flex items-center justify-between p-4 border-b border-sidebar-border">
-                        {!isCollapsed && (
+                        {!isCollapsed && user && (
                             <div>
                                 <h2 className="text-lg font-semibold text-sidebar-foreground">Farmacia App</h2>
-                                <p className="text-sm text-sidebar-foreground/60">{currentUser.name}</p>
-                                <p className="text-xs text-sidebar-foreground/40 capitalize">{currentUser.role}</p>
+                                <p className="text-sm text-sidebar-foreground/60">{user.username}</p>
+                                <p className="text-xs text-sidebar-foreground/40 capitalize">{user.roles.join(", ")}</p>
                             </div>
                         )}
                         <Button
