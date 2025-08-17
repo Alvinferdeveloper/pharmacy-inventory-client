@@ -42,6 +42,7 @@ export const useSalesOverTime = (period: string) => {
 };
 
 interface BestSellingProduct {
+  idProduct: number;
   productName: string;
   totalQuantity: string;
 }

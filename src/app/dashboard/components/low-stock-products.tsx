@@ -11,7 +11,7 @@ export function LowStockProducts() {
   const getStockBadgeVariant = (stock: number) => {
     if (stock <= 1) return "destructive"
     if (stock <= 3) return "secondary"
-    return "default"
+    return "primary"
   }
 
   const getStockStatus = (stock: number) => {
@@ -67,7 +67,7 @@ export function LowStockProducts() {
               <div className="flex-1">
                 <div className="flex items-center justify-between mb-1">
                   <p className="font-medium text-sm">{product.productName}</p>
-                  <Badge variant={getStockBadgeVariant(product.stock)}>
+                  <Badge className={`bg-${getStockBadgeVariant(product.stock)} text-secondary-foreground`}>
                     {product.stock} {product.stock === 1 ? "unidad" : "unidades"}
                   </Badge>
                 </div>
@@ -78,8 +78,10 @@ export function LowStockProducts() {
                 <div className="mt-1">
                   <span
                     className={`text-xs px-2 py-1 rounded-full ${product.stock <= 1
-                        ? "bg-destructive/10 text-destructive"
-                        : "bg-secondary text-secondary-foreground"
+                      ? "bg-destructive/10 text-destructive"
+                      : product.stock <= 3
+                        ? "bg-secondary/10 text-secondary"
+                        : "bg-primary/10 text-primary"
                       }`}
                   >
                     Stock {getStockStatus(product.stock)}

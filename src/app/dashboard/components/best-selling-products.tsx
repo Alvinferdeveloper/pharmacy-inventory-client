@@ -54,7 +54,7 @@ export function BestSellingProducts() {
       <CardContent>
         <div className="space-y-3">
           {bestSellingProducts?.map((product, index) => (
-            <div key={product.productName} className="flex items-center justify-between p-3 rounded-lg border bg-card">
+            <div key={product.idProduct} className="flex items-center justify-between p-3 rounded-lg border bg-card">
               <div className="flex items-center gap-3">
                 <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-primary-foreground text-sm font-medium">
                   {index + 1}
