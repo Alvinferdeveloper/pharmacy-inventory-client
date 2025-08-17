@@ -20,7 +20,8 @@ export function SalesChart() {
     const { data: salesData, isLoading, error } = useSalesOverTime(period)
 
     const formatDate = (dateString: string) => {
-        const date = new Date(dateString)
+        const [year, month, day] = dateString.split("-").map(Number);
+        const date = new Date(year, month - 1, day);
         switch (period) {
             case "day":
                 return date.toLocaleDateString("es-ES", { day: "2-digit", month: "2-digit" })
