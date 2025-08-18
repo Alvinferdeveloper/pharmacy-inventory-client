@@ -33,17 +33,21 @@ export function ClientFormDialog({ isOpen, onOpenChange, onSubmit, editingClient
   })
 
   useEffect(() => {
-    if (editingClient) {
-      reset(editingClient)
+    if (isOpen) {
+      if (editingClient) {
+        reset(editingClient)
+      } else {
+        reset({
+          customerName: "",
+          identification: "",
+          phone: "",
+          address: "",
+        })
+      }
     } else {
-      reset({
-        customerName: "",
-        identification: "",
-        phone: "",
-        address: "",
-      })
+        reset()
     }
-  }, [editingClient, reset])
+  }, [isOpen, editingClient, reset])
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>

@@ -33,8 +33,8 @@ export function ClientesList({ onCreateVenta }: ClientesListProps) {
     const { data: allClientes, isLoading: isLoadingAll, error: allClientsError } = useClients()
     const { data: searchedClientes, isLoading: isLoadingSearch, error: searchError } = useSearchCustomers(debouncedSearchTerm)
 
-    const { mutate: addClient, isPending: isAddingClient, error: addClientError } = useAddClient()
-    const { mutate: updateClient, isPending: isUpdatingClient, error: updateClientError } = useUpdateCustomer()
+    const { mutate: addClient, isPending: isAddingClient, error: addClientError, reset: resetAddClientError } = useAddClient()
+    const { mutate: updateClient, isPending: isUpdatingClient, error: updateClientError, reset: resetUpdateClientError } = useUpdateCustomer()
     const { mutate: deleteClient, isPending: isDeletingClient } = useDeleteCustomer()
 
     const clientes = debouncedSearchTerm.length > 2 ? searchedClientes : allClientes
@@ -83,6 +83,8 @@ export function ClientesList({ onCreateVenta }: ClientesListProps) {
         setIsModalOpen(isOpen)
         if (!isOpen) {
             setEditingClient(null)
+            resetAddClientError()
+            resetUpdateClientError()
         }
     }
 
