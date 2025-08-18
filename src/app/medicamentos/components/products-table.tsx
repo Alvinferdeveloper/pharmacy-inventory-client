@@ -119,12 +119,12 @@ export function ProductsTable({ products, onEdit, onDelete }: ProductsTableProps
                                                 </Button>
                                             </DropdownMenuTrigger>
                                             <DropdownMenuContent align="end">
-                                                <DropdownMenuItem onClick={() => onEdit(product)}>
-                                                    <Edit className="mr-2 h-4 w-4" />
+                                                <DropdownMenuItem onClick={() => onEdit(product)} className="group">
+                                                    <Edit className="mr-2 h-4 w-4 group-hover:text-accent-foreground" />
                                                     Editar
                                                 </DropdownMenuItem>
-                                                <DropdownMenuItem onClick={() => onDelete(product.idProduct)} className="text-destructive">
-                                                    <Trash2 className="mr-2 h-4 w-4" />
+                                                <DropdownMenuItem onClick={() => onDelete(product.idProduct)} className="text-destructive group">
+                                                    <Trash2 className="mr-2 h-4 w-4 group-hover:text-destructive" />
                                                     Eliminar
                                                 </DropdownMenuItem>
                                             </DropdownMenuContent>
