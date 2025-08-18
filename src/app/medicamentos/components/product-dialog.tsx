@@ -16,62 +16,14 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useForm, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import * as z from "zod"
 import { useCategories } from "@/app/hooks/useCategories"
 import { useSuppliers } from "@/app/hooks/useSuppliers"
 import { Product } from "@/app/hooks/useProducts"
 import { AddProductPayload } from "@/app/hooks/useAddProduct"
 import { UpdateProductPayload } from "@/app/hooks/useUpdateProduct"
 import { Alert, AlertDescription } from "@/components/ui/alert"
+import { productSchema, ProductFormData, ProductData } from "../types/product.schema"
 
-const productSchema = z.object({
-    code: z.string().min(1, "El código es requerido"),
-    productName: z.string().min(1, "El nombre es requerido"),
-    description: z.string(),
-    purchasePrice: z.union([z.string(), z.number()])
-        .transform(val => typeof val === 'string' ? parseFloat(val) : val)
-        .refine(val => !isNaN(val), { message: "Debe ser un número" })
-        .refine(val => val >= 0, { message: "El precio debe ser positivo" }),
-    sellingPrice: z.union([z.string(), z.number()])
-        .transform(val => typeof val === 'string' ? parseFloat(val) : val)
-        .refine(val => !isNaN(val), { message: "Debe ser un número" })
-        .refine(val => val >= 0, { message: "El precio debe ser positivo" }),
-    stock: z.union([z.string(), z.number()])
-        .transform(val => typeof val === 'string' ? parseInt(val) : Math.floor(val))
-        .refine(val => !isNaN(val), { message: "Debe ser un número" })
-        .refine(val => val >= 0, { message: "El stock debe ser positivo" }),
-    expirationDate: z.string().min(1, "La fecha es requerida"),
-    idCategory: z.union([z.string(), z.number()])
-        .transform(val => val ? Number(val) : undefined)
-        .optional(),
-    idSupplier: z.union([z.string(), z.number()])
-        .transform(val => val ? Number(val) : undefined)
-        .optional(),
-})
-
-type ProductFormData = {
-    code: string
-    productName: string
-    description: string
-    purchasePrice: string | number
-    sellingPrice: string | number
-    stock: string | number
-    expirationDate: string
-    idCategory?: string | number
-    idSupplier?: string | number
-}
-
-type ProductData = {
-    code: string
-    productName: string
-    description: string
-    purchasePrice: number
-    sellingPrice: number
-    stock: number
-    expirationDate: string
-    idCategory?: number
-    idSupplier?: number
-}
 
 interface ProductDialogProps {
     isOpen: boolean
