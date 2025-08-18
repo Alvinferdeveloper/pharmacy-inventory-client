@@ -106,32 +106,29 @@ export function ProductDialog({ isOpen, onOpenChange, onSave, product, isSaving,
     })
 
     useEffect(() => {
-        if (!isOpen) {
-            reset({
-                code: "",
-                productName: "",
-                description: "",
-                purchasePrice: 0,
-                sellingPrice: 0,
-                stock: 0,
-                expirationDate: "",
-                idCategory: undefined,
-                idSupplier: undefined,
-            })
-        } else if (product) {
-            reset({
-                code: product.code,
-                productName: product.productName,
-                description: product.description,
-                purchasePrice: Number(product.purchasePrice),
-                sellingPrice: Number(product.sellingPrice),
-                stock: Number(product.stock),
-                expirationDate: product.expirationDate,
-                idCategory: product.category.idCategory,
-                idSupplier: product.supplier.idSupplier,
-            })
+        if (isOpen) {
+            if (product) {
+                reset({
+                    ...product,
+                    idCategory: product.category.idCategory,
+                    idSupplier: product.supplier.idSupplier,
+                    expirationDate: new Date(product.expirationDate).toISOString().split('T')[0],
+                })
+            } else {
+                reset({
+                    code: "",
+                    productName: "",
+                    description: "",
+                    purchasePrice: 0,
+                    sellingPrice: 0,
+                    stock: 0,
+                    expirationDate: "",
+                    idCategory: categories?.[0]?.idCategory,
+                    idSupplier: suppliers?.[0]?.idSupplier,
+                })
+            }
         }
-    }, [product, isOpen, reset])
+    }, [product, isOpen, reset, categories, suppliers])
 
     const onSubmit = (formData: ProductFormData) => {
         // Transform the form data to match the expected type
