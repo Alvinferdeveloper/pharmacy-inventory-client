@@ -17,11 +17,12 @@ export const useAddClient = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['clients'] });
     },
-    onError: (error) => {
+    onError: (error: AxiosError) => {
       if (error.response?.status === 409) {
-        throw new Error('La identificación ya existe');
+        error.message = 'La identificación ya existe';
+        return;
       }
-      throw new Error('Error al crear el cliente');
+      error.message = 'Error al crear el cliente';
     },
   });
 };

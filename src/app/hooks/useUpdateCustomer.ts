@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 
 interface UpdateCustomerPayload {
   customerName: string;
@@ -22,6 +22,13 @@ export const useUpdateCustomer = () => {
     mutationFn: updateCustomer,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['clients'] });
+    },
+    onError: (error: AxiosError) => {
+      if (error.response?.status === 409) {
+        error.message = 'La identificación ya existe';
+        return;
+      }
+      error.message = 'Error al actualizar el cliente';
     },
   });
 };
