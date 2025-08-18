@@ -8,8 +8,8 @@ import { useClients } from "@/app/hooks/useClients"
 import { Customer } from "../types/customer.dto"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { useAddClient } from "@/app/hooks/useAddClient"
-import { useUpdateCustomer } from "@/app/hooks/useUpdateCustomer"
-import { useDeleteCustomer } from "@/app/hooks/useDeleteCustomer"
+import { useUpdateClient } from "@/app/hooks/useUpdateClient"
+import { useDeleteClient } from "@/app/hooks/useDeleteClient"
 import { useDebounce } from "@/app/hooks/useDebounce"
 import { useSearchCustomers } from "@/app/hooks/useSearchCustomers"
 import { ClientTable } from "./ClientTable"
@@ -34,8 +34,8 @@ export function ClientesList({ onCreateVenta }: ClientesListProps) {
     const { data: searchedClientes, isLoading: isLoadingSearch, error: searchError } = useSearchCustomers(debouncedSearchTerm)
 
     const { mutate: addClient, isPending: isAddingClient, error: addClientError, reset: resetAddClientError } = useAddClient()
-    const { mutate: updateClient, isPending: isUpdatingClient, error: updateClientError, reset: resetUpdateClientError } = useUpdateCustomer()
-    const { mutate: deleteClient, isPending: isDeletingClient } = useDeleteCustomer()
+    const { mutate: updateClient, isPending: isUpdatingClient, error: updateClientError, reset: resetUpdateClientError } = useUpdateClient()
+    const { mutate: deleteClient, isPending: isDeletingClient } = useDeleteClient()
 
     const clientes = debouncedSearchTerm.length > 2 ? searchedClientes : allClientes
     const isLoading = debouncedSearchTerm.length > 2 ? isLoadingSearch : isLoadingAll
