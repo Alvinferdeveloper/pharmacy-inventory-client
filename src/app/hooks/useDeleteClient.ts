@@ -1,6 +1,7 @@
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
+import { toast } from 'sonner';
 
 const deleteClient = async (id: number) => {
   const { data } = await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/customers/${id}`, {
@@ -16,6 +17,7 @@ export const useDeleteClient = () => {
     mutationFn: deleteClient,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['clients'] });
+      toast.success("Cliente eliminado exitosamente");
     },
   });
 };

@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios, { AxiosError } from 'axios';
 import { ClientSchema } from '../clientes/types/cliente.schema';
+import { toast } from 'sonner';
 
 const addClient = async (client: ClientSchema) => {
   const { data } = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/customers`, client, {
@@ -16,6 +17,7 @@ export const useAddClient = () => {
     mutationFn: addClient,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['clients'] });
+      toast.success("Cliente agregado exitosamente");
     },
     onError: (error: AxiosError) => {
       if (error.response?.status === 409) {
