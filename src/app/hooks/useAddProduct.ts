@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios, { AxiosError } from 'axios';
+import { toast } from "sonner"
 
 export interface AddProductPayload {
   productName: string;
@@ -27,6 +28,7 @@ export const useAddProduct = () => {
     mutationFn: addProduct,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['products'] });
+      toast.success("Producto agregado exitosamente")
     },
     onError: (error: AxiosError) => {
       if (error.status == 409) {
