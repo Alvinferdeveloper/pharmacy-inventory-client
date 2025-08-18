@@ -19,7 +19,7 @@ interface ProductsTableProps {
 export function ProductsTable({ products, onEdit, onDelete }: ProductsTableProps) {
     const [searchTerm, setSearchTerm] = useState("")
     const [currentPage, setCurrentPage] = useState(1)
-    const itemsPerPage = 10
+    const itemsPerPage = 6
 
     const filteredProducts = products.filter(
         (product) =>
