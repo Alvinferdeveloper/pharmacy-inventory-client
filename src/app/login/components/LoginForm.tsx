@@ -10,13 +10,13 @@ import { Loader2, Pill, Shield, User, Lock } from "lucide-react"
 import { useLogin } from "@/app/hooks/useLogin"
 
 export function LoginForm() {
-    const [username, setUsername] = useState("")
+    const [identification, setIdentification] = useState("")
     const [password, setPassword] = useState("")
     const { mutate: login, isPending, error } = useLogin()
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
-        login({ username, password })
+        login({ identification, password })
     }
 
     return (
@@ -37,16 +37,16 @@ export function LoginForm() {
             <CardContent className="space-y-6">
                 <form onSubmit={handleSubmit} className="space-y-5">
                     <div className="space-y-2">
-                        <Label htmlFor="username" className="text-slate-700 font-medium flex items-center gap-2">
+                        <Label htmlFor="identification" className="text-slate-700 font-medium flex items-center gap-2">
                             <User className="w-4 h-4 text-emerald-600" />
-                            Nombre de usuario
+                            Identificación
                         </Label>
                         <Input
-                            id="username"
+                            id="identification"
                             type="text"
-                            value={username}
-                            onChange={(e) => setUsername(e.target.value)}
-                            placeholder="Ingrese su nombre de usuario"
+                            value={identification}
+                            onChange={(e) => setIdentification(e.target.value)}
+                            placeholder="Ingrese su identificación"
                             className="h-12 border-slate-200 focus:border-emerald-500 focus:ring-emerald-500 transition-colors"
                             required
                         />

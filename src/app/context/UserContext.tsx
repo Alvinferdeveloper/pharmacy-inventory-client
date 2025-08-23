@@ -4,7 +4,9 @@ import { createContext, useContext, useState, ReactNode } from 'react';
 
 interface User {
   idUser: number;
-  username: string;
+  identification: string;
+  phone: string;
+  email: string;
   roles: string[];
 }
 

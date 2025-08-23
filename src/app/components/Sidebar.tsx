@@ -67,7 +67,9 @@ export function Sidebar({ children }: SidebarProps) {
                         {!isCollapsed && user && (
                             <div>
                                 <h2 className="text-lg font-semibold text-sidebar-foreground">Farmacia App</h2>
-                                <p className="text-sm text-sidebar-foreground/60">{user.username}</p>
+                                <p className="text-sm text-sidebar-foreground/60">{user.identification}</p>
+                                <p className="text-xs text-sidebar-foreground/60">{user.phone}</p>
+                                <p className="text-xs text-sidebar-foreground/60">{user.email}</p>
                                 <p className="text-xs text-sidebar-foreground/40 capitalize">{user.roles.join(", ")}</p>
                             </div>
                         )}
