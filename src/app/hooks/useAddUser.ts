@@ -8,7 +8,7 @@ export interface AddUserPayload {
   identification: string;
   phone: string;
   email?: string;
-  
+
   roleId: number;
 }
 
@@ -29,10 +29,11 @@ export const useAddUser = () => {
       toast.success("Usuario agregado exitosamente")
     },
     onError: (error: AxiosError) => {
-      if (error.response && error.response.data && (error.response.data as any).message) {
-        throw new Error((error.response.data as any).message);
+      if (error.status == 409) {
+        error.message = "Un usuario con estaS identificación ya existe"
+        return;
       }
-      throw new Error("Ocurrió un error inesperado al agregar el usuario");
+      error.message = "Ocurrió un error inesperado al agregar el usuario"
     }
   });
 

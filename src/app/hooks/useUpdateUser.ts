@@ -8,12 +8,11 @@ export interface UpdateUserPayload {
   identification?: string;
   phone?: string;
   email?: string;
-  
+
   roleId?: number;
 }
 
 const updateUser = async ({ id, payload }: { id: number; payload: UpdateUserPayload }) => {
-  console.log(payload)
   const { data } = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/users/${id}`, payload, {
     withCredentials: true
   });
@@ -30,10 +29,11 @@ export const useUpdateUser = () => {
       toast.success("Usuario actualizado exitosamente")
     },
     onError: (error: AxiosError) => {
-      if (error.response && error.response.data && (error.response.data as any).message) {
-        throw new Error((error.response.data as any).message);
+      if (error.status == 409) {
+        error.message = "Un usuario con esta identificación ya existe"
+        return;
       }
-      throw new Error("Ocurrió un error inesperado al actualizar el usuario");
+      error.message = "Ocurrió un error inesperado al actualizar el usuario"
     }
   });
 
