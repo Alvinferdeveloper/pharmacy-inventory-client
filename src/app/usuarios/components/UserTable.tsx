@@ -34,10 +34,11 @@ export function UserTable({ users, onEdit, onDelete, isDeleting, deletingUserId 
     const startIndex = (currentPage - 1) * itemsPerPage
     const paginatedUsers = filteredUsers.slice(startIndex, startIndex + itemsPerPage)
 
+
     const getRoleStatus = (roleName: string) => {
-        if (roleName === "Administrator") return { label: "Administrador", variant: "destructive" }
-        if (roleName === "Salesman") return { label: "Vendedor", variant: "secondary" }
-        return { label: "Consultor", variant: "default" }
+        if (roleName === "Administrator") return { label: "Administrador", variant: "destructive" } as const
+        if (roleName === "Salesman") return { label: "Vendedor", variant: "secondary" } as const
+        return { label: "Consultor", variant: "default" } as const
     }
 
     return (
@@ -81,23 +82,14 @@ export function UserTable({ users, onEdit, onDelete, isDeleting, deletingUserId 
                                         </Badge>
                                     </TableCell>
                                     <TableCell className="text-right">
-                                        <DropdownMenu>
-                                            <DropdownMenuTrigger asChild>
-                                                <Button variant="ghost" className="h-8 w-8 p-0">
-                                                    <MoreHorizontal className="h-4 w-4" />
-                                                </Button>
-                                            </DropdownMenuTrigger>
-                                            <DropdownMenuContent align="end">
-                                                <DropdownMenuItem onClick={() => onEdit(user)}>
-                                                    <Edit className="mr-2 h-4 w-4" />
-                                                    Editar
-                                                </DropdownMenuItem>
-                                                <DropdownMenuItem onClick={() => onDelete(user.idUser)} className="text-destructive">
-                                                    <Trash2 className="mr-2 h-4 w-4" />
-                                                    Eliminar
-                                                </DropdownMenuItem>
-                                            </DropdownMenuContent>
-                                        </DropdownMenu>
+                                        <div className="flex items-center justify-end gap-2">
+                                            <Button variant="outline" size="icon" onClick={() => onEdit(user)}>
+                                                <Edit className="h-4 w-4" />
+                                            </Button>
+                                            <Button variant="destructive" size="icon" onClick={() => onDelete(user.idUser)} disabled={isDeleting && deletingUserId === user.idUser}>
+                                                <Trash2 className="h-4 w-4" />
+                                            </Button>
+                                        </div>
                                     </TableCell>
                                 </TableRow>
                             )
