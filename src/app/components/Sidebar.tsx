@@ -13,9 +13,9 @@ import { LogOut } from "lucide-react";
 import { useLogout } from "@/app/hooks/useLogout";
 
 const USER_ROLES = {
-    Administrator: ["dashboard", "clientes", "medicamentos", "usuarios", "categorias", "proveedores", "reportes"],
-    Salesman: ["clientes", "medicamentos", "categorias"],
-    Consultant: ["dashboard", "clientes", "medicamentos", "reportes"],
+    Administrator: ["dashboard", "clientes", "medicamentos", "usuarios", "categorias", "proveedores", "reportes", "invoices"],
+    Salesman: ["clientes", "medicamentos", "categorias", "invoices"],
+    Consultant: ["dashboard", "clientes", "medicamentos", "reportes", "invoices"],
 }
 
 const navigationItems = [
@@ -25,6 +25,7 @@ const navigationItems = [
     { name: "Usuarios", href: "/usuarios", icon: UserCheck, key: "usuarios" },
     { name: "Categorías", href: "/categorias", icon: FolderOpen, key: "categorias" },
     { name: "Proveedores", href: "/proveedores", icon: Truck, key: "proveedores" },
+    { name: "Facturas", href: "/invoices", icon: FileText, key: "invoices" },
     { name: "Reportes", href: "/reports", icon: FileText, key: "reportes" },
 ]
 
