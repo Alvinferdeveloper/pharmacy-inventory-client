@@ -84,7 +84,7 @@ export function Sidebar({ children }: SidebarProps) {
                             variant="ghost"
                             size="icon"
                             onClick={() => setIsCollapsed(!isCollapsed)}
-                            className="text-sidebar-foreground hover:bg-sidebar-accent"
+                            className="text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground"
                         >
                             {isCollapsed ? <Menu className="h-4 w-4" /> : <X className="h-4 w-4" />}
                         </Button>
@@ -100,10 +100,10 @@ export function Sidebar({ children }: SidebarProps) {
                                     <Button
                                         variant={isActive ? "default" : "ghost"}
                                         className={cn(
-                                            "w-full justify-start gap-3",
+                                            "w-full justify-start gap-3 text-primary-foreground",
                                             isActive
-                                                ? "bg-primary text-primary-foreground"
-                                                : "text-foreground hover:bg-primary/80 hover:text-primary-foreground",
+                                                ? "bg-primary"
+                                                : " hover:bg-primary/80 hover:text-primary-foreground",
                                             isCollapsed && "px-2 justify-center"
                                         )}
                                     >
@@ -120,7 +120,7 @@ export function Sidebar({ children }: SidebarProps) {
                         <Button
                             variant="ghost"
                             onClick={() => logout()}
-                            className="w-full justify-start gap-3 text-foreground hover:bg-destructive/80 hover:text-destructive-foreground"
+                            className="w-full justify-start gap-3 text-primary-foreground hover:bg-destructive/80 hover:text-destructive-foreground"
                         >
                             <LogOut className="h-4 w-4" />
                             {!isCollapsed && <span>Cerrar Sesión</span>}

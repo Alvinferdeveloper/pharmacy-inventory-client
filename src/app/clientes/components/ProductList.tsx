@@ -75,7 +75,7 @@ export function ProductList({ products, cart, searchTerm, onSearchTermChange, on
                         size="sm"
                         onClick={() => onAddToCart(product)}
                         disabled={product.stock === 0}
-                        className="bg-accent hover:bg-accent/90"
+                        className="bg-primary hover:bg-primary/90"
                       >
                         <Plus className="w-4 h-4 mr-1" />
                         Agregar

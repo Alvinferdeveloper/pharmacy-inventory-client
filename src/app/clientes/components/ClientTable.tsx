@@ -57,7 +57,7 @@ export function ClientTable({ clients, onEdit, onDelete, onCreateSale, isDeletin
                   <Button
                     size="sm"
                     onClick={() => onCreateSale(client)}
-                    className="bg-accent hover:bg-accent/90"
+                    className="bg-primary hover:bg-primary/90"
                   >
                     <ShoppingCart className="w-4 h-4 mr-1" />
                     Crear Venta

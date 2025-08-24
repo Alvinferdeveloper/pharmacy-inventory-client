@@ -103,7 +103,7 @@ export function ProductsTable({ products, onEdit, onDelete }: ProductsTableProps
                                         </div>
                                     </TableCell>
                                     <TableCell className="font-medium">{formatPrice(Number(product.purchasePrice))}</TableCell>
-                                    <TableCell className="font-medium text-accent">{formatPrice(Number(product.sellingPrice))}</TableCell>
+                                    <TableCell className="font-medium text-primary">{formatPrice(Number(product.sellingPrice))}</TableCell>
                                     <TableCell className="text-sm">{formatDate(product.expirationDate)}</TableCell>
                                     <TableCell>
                                         <div className="text-sm">

@@ -251,7 +251,7 @@ export default function ReportsPage() {
                     </div>
 
                     <div className="flex gap-4 pt-4">
-                        <Button onClick={() => handleGenerateReport()} className="flex-1 bg-secondary hover:bg-secondary/90" disabled={isLoading}>
+                        <Button onClick={() => handleGenerateReport()} className="flex-1 bg-sidebar hover:bg-sidebar/90" disabled={isLoading}>
                             {isLoading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <FileText className="h-4 w-4 mr-2" />}
                             Generar Reporte
                         </Button>
