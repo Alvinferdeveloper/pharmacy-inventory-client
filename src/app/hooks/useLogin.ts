@@ -1,5 +1,6 @@
 import { useMutation } from '@tanstack/react-query';
-import axios, { AxiosError } from 'axios';
+import axios from '@/app/lib/axios';
+import { AxiosError } from 'axios';
 import { LoginDto } from '../types/login.dto';
 import { useRouter } from 'next/navigation';
 

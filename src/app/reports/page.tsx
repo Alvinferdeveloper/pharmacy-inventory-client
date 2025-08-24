@@ -52,7 +52,7 @@ export default function ReportsPage() {
 
     const isLoading = isLoadingSalesByDate || isLoadingSalesByCustomer || isLoadingSalesByProduct || isLoadingInventory || isLoadingProductsBySupplier || isLoadingUsers
     const error = salesByDateError || salesByCustomerError || salesByProductError || inventoryError || productsBySupplierError || usersError
-    console.log(inventoryData, "inventoryData")
+
     useEffect(() => {
         if (triggerReport && !isLoading && !error) {
             let dataToExport: any[] = []

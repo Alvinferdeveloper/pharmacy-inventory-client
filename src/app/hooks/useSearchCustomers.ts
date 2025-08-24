@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
+import axios from '@/app/lib/axios';
 import { Customer } from '../clientes/types/customer.dto';
 
 const searchCustomers = async (term: string): Promise<Customer[]> => {

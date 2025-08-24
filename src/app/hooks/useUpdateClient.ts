@@ -1,7 +1,8 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import axios, { AxiosError } from 'axios';
+import axios from '@/app/lib/axios';
+import { AxiosError } from 'axios';
 import { ClientSchema } from '../clientes/types/cliente.schema';
-import { toast } from 'sonner';
+import { toast } from "sonner"
 
 const updateClient = async ({ id, payload }: { id: number; payload: ClientSchema }) => {
   const { data } = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/customers/${id}`, payload, {

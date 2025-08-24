@@ -1,6 +1,5 @@
-
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import axios from 'axios';
+import axios from '@/app/lib/axios';
 import { toast } from "sonner"
 
 export interface UpdateSupplierPayload {

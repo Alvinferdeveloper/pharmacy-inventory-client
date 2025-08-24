@@ -1,7 +1,8 @@
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import axios, { AxiosError } from 'axios';
+import axios from '@/app/lib/axios';
 import { toast } from 'sonner';
+import { AxiosError } from 'axios';
 
 const deleteCategory = async (id: number) => {
   const { data } = await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/categories/${id}`, {

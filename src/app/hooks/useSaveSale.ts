@@ -1,6 +1,5 @@
-
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import axios from 'axios';
+import axios from '@/app/lib/axios';
 
 interface SaleProduct {
   productId: number;
