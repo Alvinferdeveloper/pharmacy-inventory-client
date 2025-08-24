@@ -5,14 +5,14 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { LayoutDashboard, Users, Pill, UserCheck, FolderOpen, Truck, Menu, X } from "lucide-react"
+import { LayoutDashboard, Users, Pill, UserCheck, FolderOpen, Truck, Menu, X, FileText } from "lucide-react"
 import { useCurrentUser } from "@/app/hooks/useCurrentUser"
 import { useUser } from "@/app/context/UserContext"
 
 const USER_ROLES = {
-    Administrator: ["dashboard", "clientes", "medicamentos", "usuarios", "categorias", "proveedores"],
+    Administrator: ["dashboard", "clientes", "medicamentos", "usuarios", "categorias", "proveedores", "reportes"],
     Salesman: ["clientes", "medicamentos", "categorias"],
-    Consultant: ["dashboard", "clientes", "medicamentos"],
+    Consultant: ["dashboard", "clientes", "medicamentos", "reportes"],
 }
 
 const navigationItems = [
@@ -22,6 +22,7 @@ const navigationItems = [
     { name: "Usuarios", href: "/usuarios", icon: UserCheck, key: "usuarios" },
     { name: "Categorías", href: "/categorias", icon: FolderOpen, key: "categorias" },
     { name: "Proveedores", href: "/proveedores", icon: Truck, key: "proveedores" },
+    { name: "Reportes", href: "/reports", icon: FileText, key: "reportes" },
 ]
 
 interface SidebarProps {
