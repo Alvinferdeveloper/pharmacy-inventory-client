@@ -1,10 +1,11 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { ArrowLeft, Printer } from "lucide-react"
 import { Invoice } from "@/app/hooks/useInvoices"
+import { useRef } from "react"
+import { useReactToPrint } from "react-to-print"
 
 interface InvoiceDetailsProps {
     invoice: Invoice
@@ -23,6 +24,12 @@ export function InvoiceDetails({ invoice, onBack }: InvoiceDetailsProps) {
         return new Date(dateString).toLocaleDateString("es-ES", { year: 'numeric', month: 'long', day: 'numeric' })
     }
 
+    const componentRef = useRef<HTMLDivElement>(null);
+
+    const handlePrint = useReactToPrint({
+        contentRef: componentRef,
+    });
+
     return (
         <div className="p-6 bg-gray-50 min-h-screen">
             <div className="flex items-center justify-between mb-8">
@@ -30,13 +37,13 @@ export function InvoiceDetails({ invoice, onBack }: InvoiceDetailsProps) {
                     <ArrowLeft className="w-4 h-4 mr-2" />
                     Volver a Facturas
                 </Button>
-                <Button variant="outline" onClick={() => window.print()}>
+                <Button variant="outline" onClick={handlePrint}>
                     <Printer className="w-4 h-4 mr-2" />
                     Imprimir
                 </Button>
             </div>
 
-            <div className="w-full max-w-4xl mx-auto bg-white shadow-lg border border-gray-200">
+            <div className="w-full max-w-4xl mx-auto bg-white shadow-lg border border-gray-200" ref={componentRef}>
                 <div className="border-b-2 border-gray-800 p-8">
                     <div className="flex justify-between items-start">
                         <div className="flex-1">
