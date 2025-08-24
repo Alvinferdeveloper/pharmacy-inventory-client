@@ -9,6 +9,9 @@ import { LayoutDashboard, Users, Pill, UserCheck, FolderOpen, Truck, Menu, X, Fi
 import { useCurrentUser } from "@/app/hooks/useCurrentUser"
 import { useUser } from "@/app/context/UserContext"
 
+import { LogOut } from "lucide-react";
+import { useLogout } from "@/app/hooks/useLogout";
+
 const USER_ROLES = {
     Administrator: ["dashboard", "clientes", "medicamentos", "usuarios", "categorias", "proveedores", "reportes"],
     Salesman: ["clientes", "medicamentos", "categorias"],
@@ -34,6 +37,8 @@ export function Sidebar({ children }: SidebarProps) {
     const pathname = usePathname()
     const { data: currentUser, isLoading, isError } = useCurrentUser()
     const { user, setUser } = useUser()
+
+    const { mutate: logout } = useLogout()
 
     useEffect(() => {
         if (currentUser) {
@@ -108,6 +113,18 @@ export function Sidebar({ children }: SidebarProps) {
                             )
                         })}
                     </nav>
+
+                    {/* Logout Button */}
+                    <div className="p-4 border-t border-sidebar-border">
+                        <Button
+                            variant="ghost"
+                            onClick={() => logout()}
+                            className="w-full justify-start gap-3 text-foreground hover:bg-destructive/80 hover:text-destructive-foreground"
+                        >
+                            <LogOut className="h-4 w-4" />
+                            {!isCollapsed && <span>Cerrar Sesión</span>}
+                        </Button>
+                    </div>
                 </div>
             </div>
 
