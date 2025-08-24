@@ -11,7 +11,7 @@ export function LowStockProducts() {
   const getStockBadgeVariant = (stock: number) => {
     if (stock <= 1) return "destructive"
     if (stock <= 3) return "secondary"
-    return "primary"
+    return "default"
   }
 
   const getStockStatus = (stock: number) => {
@@ -67,7 +67,7 @@ export function LowStockProducts() {
               <div className="flex-1">
                 <div className="flex items-center justify-between mb-1">
                   <p className="font-medium text-sm">{product.productName}</p>
-                  <Badge className={`bg-${getStockBadgeVariant(product.stock)} text-secondary-foreground`}>
+                  <Badge variant={getStockBadgeVariant(product.stock)}>
                     {product.stock} {product.stock === 1 ? "unidad" : "unidades"}
                   </Badge>
                 </div>
@@ -76,16 +76,11 @@ export function LowStockProducts() {
                   <span>${product.sellingPrice.toLocaleString("es-ES", { minimumFractionDigits: 2 })}</span>
                 </div>
                 <div className="mt-1">
-                  <span
-                    className={`text-xs px-2 py-1 rounded-full ${product.stock <= 1
-                      ? "bg-destructive/10 text-destructive"
-                      : product.stock <= 3
-                        ? "bg-secondary/10 text-secondary"
-                        : "bg-primary/10 text-primary"
-                      }`}
+                  <Badge
+                    variant={getStockBadgeVariant(product.stock)}
                   >
                     Stock {getStockStatus(product.stock)}
-                  </span>
+                  </Badge>
                 </div>
               </div>
             </div>

@@ -91,7 +91,7 @@ export function ProductsTable({ products, onEdit, onDelete }: ProductsTableProps
                                         </div>
                                     </TableCell>
                                     <TableCell>
-                                        <Badge variant="outline">{product.category.categoryName}</Badge>
+                                        <Badge variant="default" className="bg-green-500">{product.category.categoryName}</Badge>
                                     </TableCell>
                                     <TableCell>
                                         <div className="flex items-center gap-2">

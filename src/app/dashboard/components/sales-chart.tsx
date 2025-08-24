@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
-import { LineChart, Line, XAxis, YAxis, ResponsiveContainer } from "recharts"
+import { AreaChart, Area, LineChart, Line, XAxis, YAxis, ResponsiveContainer } from "recharts"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { useSalesOverTime } from "@/app/hooks/useDashboard"
@@ -63,7 +63,13 @@ export function SalesChart() {
                 {!isLoading && !error && salesData && (
                     <ChartContainer config={chartConfig}>
                         <ResponsiveContainer width="100%" height={300}>
-                            <LineChart data={salesData}>
+                            <AreaChart data={salesData}>
+                                <defs>
+                                    <linearGradient id="colorTotal" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="5%" stopColor="var(--color-chart-1)" stopOpacity={0.8}/>
+                                        <stop offset="95%" stopColor="var(--color-chart-1)" stopOpacity={0}/>
+                                    </linearGradient>
+                                </defs>
                                 <XAxis dataKey="date" tickFormatter={formatDate} axisLine={false} tickLine={false} />
                                 <YAxis tickFormatter={(value) => `${value.toLocaleString("es-ES")}`} axisLine={false} tickLine={false} />
                                 <ChartTooltip
@@ -74,15 +80,17 @@ export function SalesChart() {
                                     ]}
                                     labelFormatter={(label) => `Fecha: ${formatDate(label)}`}
                                 />
-                                <Line
+                                <Area
                                     type="monotone"
                                     dataKey="total"
                                     stroke="var(--color-chart-1)"
+                                    fillOpacity={1} 
+                                    fill="url(#colorTotal)" 
                                     strokeWidth={2}
                                     dot={{ fill: "var(--color-chart-1)", strokeWidth: 2, r: 4 }}
                                     activeDot={{ r: 6, stroke: "var(--color-chart-1)", strokeWidth: 2 }}
                                 />
-                            </LineChart>
+                            </AreaChart>
                         </ResponsiveContainer>
                     </ChartContainer>
                 )}
