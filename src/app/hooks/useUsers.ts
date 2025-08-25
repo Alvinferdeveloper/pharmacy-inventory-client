@@ -2,18 +2,19 @@ import { useQuery } from '@tanstack/react-query';
 import axios from '@/app/lib/axios';
 
 export interface Role {
-    idRole: number;
-    roleName: string;
-    description: string;
+  idRole: number;
+  roleName: string;
+  description: string;
 }
 
 export interface User {
-    idUser: number;
-    name: string;
-    identification: string;
-    phone: string;
-    email?: string;
-    role: Role;
+  idUser: number;
+  name: string;
+  identification: string;
+  phone: string;
+  email?: string;
+  role: Role;
+  deletedAt?: string;
 }
 
 const getUsers = async (): Promise<User[]> => {

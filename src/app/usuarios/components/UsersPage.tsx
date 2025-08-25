@@ -6,28 +6,26 @@ import { useUsers } from "@/app/hooks/useUsers"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { UserTable } from "./UserTable"
 import { UserFormDialog } from "./UserFormDialog"
-import { DeleteUserConfirmationDialog } from "./DeleteUserConfirmationDialog"
-import { User } from "@/app/hooks/useUsers"
+import { useUpdateUser } from "@/app/hooks/useUpdateUser"
+import { useToggleUserStatus } from "@/app/hooks/useToggleUserStatus"
+import { TemporaryPasswordDialog } from "./TemporaryPasswordDialog"
 import { AddUserPayload } from "@/app/hooks/useAddUser"
 import { UpdateUserPayload } from "@/app/hooks/useUpdateUser"
 import { useAddUser } from "@/app/hooks/useAddUser"
-import { useUpdateUser } from "@/app/hooks/useUpdateUser"
-import { useDeleteUser } from "@/app/hooks/useDeleteUser"
-import { TemporaryPasswordDialog } from "./TemporaryPasswordDialog"
+import { User } from "@/app/hooks/useUsers"
 
 
 export default function UsersPage() {
     const [isDialogOpen, setIsDialogOpen] = useState(false)
-    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
     const [isTempPasswordDialogOpen, setIsTempPasswordDialogOpen] = useState(false)
     const [temporaryPassword, setTemporaryPassword] = useState<string | null>(null)
     const [editingUser, setEditingUser] = useState<User | null>(null)
-    const [deletingUserId, setDeletingUserId] = useState<number | null>(null)
+    const [togglingUserId, setTogglingUserId] = useState<number | null>(null)
 
     const { data: users, isLoading, error } = useUsers()
     const { mutate: addUser, isPending: isAdding, error: addError, reset: resetAddError } = useAddUser()
     const { mutate: updateUser, isPending: isUpdating, error: updateError, reset: resetUpdateError } = useUpdateUser()
-    const { mutate: deleteUser, isPending: isDeleting } = useDeleteUser()
+    const { mutate: toggleUserStatus, isPending: isTogglingStatus } = useToggleUserStatus()
 
     const handleAddUser = (userData: AddUserPayload | UpdateUserPayload) => {
         addUser(userData as AddUserPayload, {
@@ -50,20 +48,13 @@ export default function UsersPage() {
         }
     }
 
-    const handleDeleteUser = (userId: number) => {
-        setDeletingUserId(userId)
-        setIsDeleteDialogOpen(true)
-    }
-
-    const confirmDelete = () => {
-        if (deletingUserId) {
-            deleteUser(deletingUserId, {
-                onSuccess: () => {
-                    setDeletingUserId(null)
-                    setIsDeleteDialogOpen(false)
-                }
-            })
-        }
+    const handleToggleUserStatus = (userId: number) => {
+        setTogglingUserId(userId)
+        toggleUserStatus(userId, {
+            onSettled: () => {
+                setTogglingUserId(null)
+            }
+        })
     }
 
     const openEditDialog = (user: User) => {
@@ -119,7 +110,7 @@ export default function UsersPage() {
                             <AlertDescription>{error.message}</AlertDescription>
                         </Alert>
                     )}
-                    {users && <UserTable users={users} onEdit={openEditDialog} onDelete={handleDeleteUser} isDeleting={isDeleting} deletingUserId={deletingUserId} />}
+                    {users && <UserTable users={users} onEdit={openEditDialog} onToggleStatus={handleToggleUserStatus} isTogglingStatus={isTogglingStatus} togglingUserId={togglingUserId} />}
                 </CardContent>
             </Card>
 
@@ -130,13 +121,6 @@ export default function UsersPage() {
                 editingUser={editingUser}
                 isSaving={isAdding || isUpdating}
                 error={addError || updateError}
-            />
-
-            <DeleteUserConfirmationDialog
-                isOpen={isDeleteDialogOpen}
-                onOpenChange={setIsDeleteDialogOpen}
-                onConfirm={confirmDelete}
-                isDeleting={isDeleting}
             />
 
             <TemporaryPasswordDialog

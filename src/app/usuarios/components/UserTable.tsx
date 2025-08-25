@@ -1,24 +1,22 @@
 "use client"
-
 import { useState } from "react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { Edit, Trash2, MoreHorizontal, Search, AlertTriangle } from "lucide-react"
-
+import { Edit, Search } from "lucide-react"
 import { User } from "@/app/hooks/useUsers"
+import { Loader2, UserX, Power } from "lucide-react"
 
 interface UserTableProps {
     users: User[]
     onEdit: (user: User) => void
-    onDelete: (id: number) => void
-    isDeleting: boolean
-    deletingUserId: number | null
+    onToggleStatus: (id: number) => void
+    isTogglingStatus: boolean
+    togglingUserId: number | null
 }
 
-export function UserTable({ users, onEdit, onDelete, isDeleting, deletingUserId }: UserTableProps) {
+export function UserTable({ users, onEdit, onToggleStatus, isTogglingStatus, togglingUserId }: UserTableProps) {
     const [searchTerm, setSearchTerm] = useState("")
     const [currentPage, setCurrentPage] = useState(1)
     const itemsPerPage = 10
@@ -60,25 +58,28 @@ export function UserTable({ users, onEdit, onDelete, isDeleting, deletingUserId 
                     <TableHeader>
                         <TableRow className="bg-muted/50">
                             <TableHead className="font-semibold">Nombre</TableHead>
-                            <TableHead className="font-semibold">Identificación</TableHead>
-                            <TableHead className="font-semibold">Teléfono</TableHead>
-                            <TableHead className="font-semibold">Correo Electrónico</TableHead>
+                            <TableHead className="font-semibold">Usuario</TableHead>
                             <TableHead className="font-semibold">Rol</TableHead>
+                            <TableHead className="font-semibold">Estado</TableHead>
                             <TableHead className="text-right font-semibold">Acciones</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
                         {paginatedUsers.map((user) => {
                             const roleStatus = getRoleStatus(user.role.roleName)
+                            const isActive = user.deletedAt === null
                             return (
                                 <TableRow key={user.idUser} className="hover:bg-muted/30 transition-colors">
                                     <TableCell className="font-medium">{user.name}</TableCell>
                                     <TableCell>{user.identification}</TableCell>
-                                    <TableCell>{user.phone}</TableCell>
-                                    <TableCell>{user.email || "N/A"}</TableCell>
                                     <TableCell>
                                         <Badge variant={roleStatus.variant} className="text-xs">
                                             {roleStatus.label}
+                                        </Badge>
+                                    </TableCell>
+                                    <TableCell>
+                                        <Badge variant={isActive ? "default" : "destructive"}>
+                                            {isActive ? "Activo" : "Inactivo"}
                                         </Badge>
                                     </TableCell>
                                     <TableCell className="text-right">
@@ -86,8 +87,19 @@ export function UserTable({ users, onEdit, onDelete, isDeleting, deletingUserId 
                                             <Button variant="outline" size="icon" onClick={() => onEdit(user)}>
                                                 <Edit className="h-4 w-4" />
                                             </Button>
-                                            <Button variant="destructive" size="icon" onClick={() => onDelete(user.idUser)} disabled={isDeleting && deletingUserId === user.idUser}>
-                                                <Trash2 className="h-4 w-4" />
+                                            <Button
+                                                variant={isActive ? "destructive" : "default"}
+                                                size="icon"
+                                                onClick={() => onToggleStatus(user.idUser)}
+                                                disabled={isTogglingStatus && togglingUserId === user.idUser}
+                                            >
+                                                {isTogglingStatus && togglingUserId === user.idUser ? (
+                                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                                ) : isActive ? (
+                                                    <UserX className="h-4 w-4" />
+                                                ) : (
+                                                    <Power className="h-4 w-4" />
+                                                )}
                                             </Button>
                                         </div>
                                     </TableCell>
