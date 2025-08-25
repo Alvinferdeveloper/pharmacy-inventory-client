@@ -24,7 +24,7 @@ import { useRoles } from "@/app/hooks/useRoles"
 
 const userSchema = z.object({
     name: z.string().min(1, "El nombre es requerido"),
-    identification: z.string().min(1, "La identificación es requerida"),
+    identification: z.string().min(1, "La identificación es requerida").regex(/^\d{3}-\d{6}-\d{4}[A-Z]$/, { message: 'La identificación debe tener el formato XXX-XXXXXX-XXXXX (ej. 888-200402-1000P)' }),
     phone: z.string().min(1, "El teléfono es requerido"),
     email: z.string().email("Debe ser un correo electrónico válido").optional().or(z.literal("")),
     roleId: z.number().min(1, "El rol es requerido"),
