@@ -3,6 +3,7 @@ import { SalesChart } from "./sales-chart"
 import { BestSellingProducts } from "./best-selling-products"
 import { LowStockProducts } from "./low-stock-products"
 import { RecentInvoices } from "./recent-invoices"
+import { SalesByCategoryChart } from "./SalesByCategoryChart"
 
 export default function Dashboard() {
     return (
@@ -14,11 +15,16 @@ export default function Dashboard() {
                 </div>
                 <DashboardStats />
                 <SalesChart />
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <BestSellingProducts />
-                    <LowStockProducts />
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div className="lg:col-span-2">
+                        <BestSellingProducts />
+                    </div>
+                    <SalesByCategoryChart />
                 </div>
-                <RecentInvoices />
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <LowStockProducts />
+                    <RecentInvoices />
+                </div>
             </div>
         </div>
     )
