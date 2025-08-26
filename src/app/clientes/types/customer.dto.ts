@@ -4,4 +4,5 @@ export interface Customer {
   identification: string;
   phone: string;
   address: string;
+  deletedAt: string | null;
 }
