@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { LayoutDashboard, Users, Pill, UserCheck, FolderOpen, Truck, Menu, X, FileText } from "lucide-react"
 import { useCurrentUser } from "@/app/hooks/useCurrentUser"
 import { useUser } from "@/app/context/UserContext"
-
+import { useRouter } from "next/navigation"
 import { LogOut } from "lucide-react";
 import { useLogout } from "@/app/hooks/useLogout";
 
@@ -40,12 +40,16 @@ export function Sidebar({ children }: SidebarProps) {
     const { user, setUser } = useUser()
 
     const { mutate: logout } = useLogout()
+    const router = useRouter()
 
     useEffect(() => {
         if (currentUser) {
             setUser(currentUser)
+            if (currentUser.mustChangePassword && pathname !== '/change-password') {
+                router.push('/change-password')
+            }
         }
-    }, [currentUser, setUser])
+    }, [currentUser, setUser, pathname, router])
 
     const allowedItems = user ? navigationItems.filter((item) =>
         USER_ROLES[user.roles[0] as keyof typeof USER_ROLES]?.includes(item.key)

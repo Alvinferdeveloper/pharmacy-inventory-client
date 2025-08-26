@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import axios from '@/app/lib/axios';
+import { usePathname } from 'next/navigation';
 
 interface User {
   idUser: number;
@@ -7,6 +8,16 @@ interface User {
   phone: string;
   email: string;
   roles: string[];
+  mustChangePassword: boolean;
+}
+
+interface User {
+  idUser: number;
+  identification: string;
+  phone: string;
+  email: string;
+  roles: string[];
+  mustChangePassword: boolean;
 }
 
 const getProfile = async (): Promise<User> => {

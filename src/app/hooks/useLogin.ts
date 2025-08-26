@@ -3,6 +3,7 @@ import axios from '@/app/lib/axios';
 import { AxiosError } from 'axios';
 import { LoginDto } from '../types/login.dto';
 import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 
 const login = async (credentials: LoginDto) => {
   try{
@@ -27,8 +28,11 @@ export const useLogin = () => {
   return useMutation({
     mutationFn: login,
     onSuccess: (data) => {
-      console.log('Login successful:', data);
-      router.push('/');
+      if (data.mustChangePassword) {
+        router.push('/change-password');
+      } else {
+        router.push('/');
+      }
     },
     onError: (error) => {
       console.log(error)
