@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
@@ -51,14 +51,14 @@ export default function ChangePasswordPage() {
         }
     }
 
+    useEffect(() => {
+        if (currentUser && !currentUser.mustChangePassword) {
+            router.push("/dashboard")
+        }
+    }, [currentUser, router])
+
     if (isLoadingUser) {
         return <div className="flex justify-center items-center h-screen">Cargando usuario...</div>
-    }
-
-    console.log(currentUser)
-    if (currentUser && !currentUser.mustChangePassword) {
-        router.push("/dashboard")
-        return null
     }
 
     return (
@@ -79,17 +79,17 @@ export default function ChangePasswordPage() {
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                         <div className="space-y-2">
                             <Label htmlFor="oldPassword">Contraseña Actual</Label>
-                            <Input id="oldPassword" type="password" {...register("oldPassword")}/>
+                            <Input id="oldPassword" type="password" {...register("oldPassword")} />
                             {errors.oldPassword && <p className="text-red-500 text-xs mt-1">{errors.oldPassword.message}</p>}
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="newPassword">Nueva Contraseña</Label>
-                            <Input id="newPassword" type="password" {...register("newPassword")}/>
+                            <Input id="newPassword" type="password" {...register("newPassword")} />
                             {errors.newPassword && <p className="text-red-500 text-xs mt-1">{errors.newPassword.message}</p>}
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="confirmNewPassword">Confirmar Nueva Contraseña</Label>
-                            <Input id="confirmNewPassword" type="password" {...register("confirmNewPassword")}/>
+                            <Input id="confirmNewPassword" type="password" {...register("confirmNewPassword")} />
                             {errors.confirmNewPassword && <p className="text-red-500 text-xs mt-1">{errors.confirmNewPassword.message}</p>}
                         </div>
 

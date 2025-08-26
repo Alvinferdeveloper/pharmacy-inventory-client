@@ -1,4 +1,4 @@
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from '@/app/lib/axios';
 import { toast } from "sonner"
 
@@ -17,9 +17,12 @@ const changePassword = async ({ id, payload }: ChangePasswordPayload) => {
 };
 
 export const useChangePassword = () => {
+  const queryClient = useQueryClient();
+
   const mutation = useMutation({
     mutationFn: changePassword,
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['currentUser'] });
       toast.success("Contraseña cambiada exitosamente");
     },
     onError: (error: any) => {
