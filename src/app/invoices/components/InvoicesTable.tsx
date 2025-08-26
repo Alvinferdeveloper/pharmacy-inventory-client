@@ -1,12 +1,9 @@
-"use client"
-
 import { useState } from "react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { Eye, Trash2, MoreHorizontal, Search } from "lucide-react"
+import { Eye, Trash2, Search } from "lucide-react"
 import { Invoice } from "@/app/hooks/useInvoices"
 
 interface InvoicesTableProps {
@@ -77,23 +74,16 @@ export function InvoicesTable({ invoices, onView, onDelete }: InvoicesTableProps
                                 <TableCell>{invoice.user.name}</TableCell>
                                 <TableCell className="font-medium">{formatPrice(invoice.total)}</TableCell>
                                 <TableCell className="text-right">
-                                    <DropdownMenu>
-                                        <DropdownMenuTrigger asChild>
-                                            <Button variant="ghost" className="h-8 w-8 p-0">
-                                                <MoreHorizontal className="h-4 w-4" />
-                                            </Button>
-                                        </DropdownMenuTrigger>
-                                        <DropdownMenuContent align="end">
-                                            <DropdownMenuItem onClick={() => onView(invoice.idInvoice)}>
-                                                <Eye className="mr-2 h-4 w-4" />
-                                                Ver Detalles
-                                            </DropdownMenuItem>
-                                            <DropdownMenuItem onClick={() => onDelete(invoice.idInvoice)} className="text-destructive">
-                                                <Trash2 className="mr-2 h-4 w-4" />
-                                                Eliminar
-                                            </DropdownMenuItem>
-                                        </DropdownMenuContent>
-                                    </DropdownMenu>
+                                    <div className="flex gap-2 justify-end">
+                                        <Button size="sm" variant="outline" onClick={() => onView(invoice.idInvoice)}>
+                                            <Eye className="h-4 w-4 mr-1" />
+                                            Ver
+                                        </Button>
+                                        <Button size="sm" variant="destructive" onClick={() => onDelete(invoice.idInvoice)}>
+                                            <Trash2 className="h-4 w-4 mr-1" />
+                                            Eliminar
+                                        </Button>
+                                    </div>
                                 </TableCell>
                             </TableRow>
                         ))}
