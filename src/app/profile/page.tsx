@@ -12,7 +12,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { useCurrentUser } from "@/app/hooks/useCurrentUser"
 import { useUpdateUser } from "@/app/hooks/useUpdateUser"
-import { ChangePasswordPage } from "@/app/change-password/page"
+import ChangePasswordPage from "@/app/change-password/page"
 
 const profileSchema = z.object({
     name: z.string().min(1, "El nombre es requerido"),

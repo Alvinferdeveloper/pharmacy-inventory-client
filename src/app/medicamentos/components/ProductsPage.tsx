@@ -81,7 +81,7 @@ export default function ProductsPage() {
 
     return (
         <div className="container mx-auto py-8 px-4 max-w-7xl">
-            <div className="flex items-center justify-between mb-8">
+            <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
                 <div className="flex items-center gap-3">
                     <div className="p-2 bg-primary/10 rounded-lg">
                         <Package className="h-6 w-6 text-primary" />
@@ -92,7 +92,7 @@ export default function ProductsPage() {
                     </div>
                 </div>
                 {canManageProducts && (
-                    <Button onClick={openAddDialog} className="bg-primary hover:bg-primary/90">
+                    <Button onClick={openAddDialog} className="bg-primary hover:bg-primary/90 w-full md:w-auto">
                         <Plus className="h-4 w-4 mr-2" />
                         Nuevo Producto
                     </Button>

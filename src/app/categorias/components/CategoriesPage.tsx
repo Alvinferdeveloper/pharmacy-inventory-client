@@ -83,7 +83,7 @@ export default function CategoriesPage() {
 
     return (
         <div className="container mx-auto py-8 px-4 max-w-7xl">
-            <div className="flex items-center justify-between mb-8">
+            <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
                 <div className="flex items-center gap-3">
                     <div className="p-2 bg-primary/10 rounded-lg">
                         <Tag className="h-6 w-6 text-primary" />
@@ -94,7 +94,7 @@ export default function CategoriesPage() {
                     </div>
                 </div>
                 {canManageCategories && (
-                    <Button onClick={openAddDialog} className="bg-primary hover:bg-primary/90">
+                    <Button onClick={openAddDialog} className="bg-primary hover:bg-primary/90 w-full md:w-auto">
                         <Plus className="h-4 w-4 mr-2" />
                         Nueva Categoría
                     </Button>

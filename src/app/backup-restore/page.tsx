@@ -117,7 +117,7 @@ function BackupRestorePage() {
                             {!isLoadingBackups && backups && backups.length > 0 ? (
                                 <ul className="space-y-3 max-h-60 overflow-y-auto pr-2">
                                     {backups.map((backup) => (
-                                        <li key={backup} className="flex items-center justify-between p-3 border border-gray-200 rounded-md bg-white shadow-sm">
+                                        <li key={backup} className="flex flex-col md:flex-row items-start md:items-center justify-between p-3 border border-gray-200 rounded-md bg-white shadow-sm gap-4 md:gap-0">
                                             <div className="flex items-center gap-3">
                                                 <Database className="h-5 w-5 text-gray-600" />
                                                 <span className="font-medium text-gray-700">{backup}</span>
@@ -126,7 +126,7 @@ function BackupRestorePage() {
                                                 size="sm"
                                                 onClick={() => handleRestoreClick(backup)}
                                                 disabled={isRestoring}
-                                                className="bg-blue-600 hover:bg-blue-700 text-white rounded-md px-4 py-2 transition-all duration-200 transform hover:scale-105"
+                                                className="bg-blue-600 hover:bg-blue-700 text-white rounded-md px-4 py-2 transition-all duration-200 transform hover:scale-105 w-full md:w-auto"
                                             >
                                                 {isRestoring && selectedBackup === backup ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Upload className="w-4 h-4 mr-2" />}
                                                 {isRestoring && selectedBackup === backup ? "Restaurando..." : "Restaurar"}

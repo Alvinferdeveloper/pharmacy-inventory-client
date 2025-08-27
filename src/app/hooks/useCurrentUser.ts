@@ -15,6 +15,7 @@ interface User {
   idUser: number;
   identification: string;
   phone: string;
+  name: string;
   email: string;
   roles: string[];
   mustChangePassword: boolean;

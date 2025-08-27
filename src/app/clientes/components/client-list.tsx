@@ -92,18 +92,20 @@ export function ClientesList({ onCreateVenta }: ClientesListProps) {
         <div className="p-6">
             <Card className=" bg-card">
                 <CardHeader>
-                    <div className="flex items-center justify-between">
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                         <CardTitle className="text-2xl font-semibold text-foreground">Gestión de Clientes</CardTitle>
                         {canManageClients && (
-                            <ClientFormDialog
-                                isOpen={isModalOpen}
-                                onOpenChange={handleModalOpenChange}
-                                onSubmit={onSubmit}
-                                editingClient={editingClient}
-                                isAdding={isAddingClient}
-                                isUpdating={isUpdatingClient}
-                                error={addClientError || updateClientError}
-                            />
+                            <div className="w-full md:w-auto">
+                                <ClientFormDialog
+                                    isOpen={isModalOpen}
+                                    onOpenChange={handleModalOpenChange}
+                                    onSubmit={onSubmit}
+                                    editingClient={editingClient}
+                                    isAdding={isAddingClient}
+                                    isUpdating={isUpdatingClient}
+                                    error={addClientError || updateClientError}
+                                />
+                            </div>
                         )}
                     </div>
                 </CardHeader>

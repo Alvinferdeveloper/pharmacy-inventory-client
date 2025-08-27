@@ -15,7 +15,7 @@ function InventoryMovementsPage() {
     const [endDate, setEndDate] = useState<string>("")
 
     const { data: movements, isLoading, error } = useInventoryMovements(productCode, startDate, endDate)
-    
+
     return (
         <div className="container mx-auto py-8 px-4 max-w-7xl">
             <div className="flex items-center gap-3 mb-8">
@@ -31,7 +31,7 @@ function InventoryMovementsPage() {
             <Card>
                 <CardHeader>
                     <CardTitle>Filtros</CardTitle>
-                    <div className="flex gap-4">
+                    <div className="flex flex-col md:flex-row gap-4">
                         <Input
                             type="text"
                             placeholder="Código del Producto"
