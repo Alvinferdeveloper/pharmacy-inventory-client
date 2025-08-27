@@ -12,9 +12,9 @@ export interface InventoryMovement {
     product: Product;
 }
 
-const getInventoryMovements = async (productId?: number, startDate?: string, endDate?: string): Promise<InventoryMovement[]> => {
+const getInventoryMovements = async (productCode?: string, startDate?: string, endDate?: string): Promise<InventoryMovement[]> => {
   const params = new URLSearchParams();
-  if (productId) params.append('productId', String(productId));
+  if (productCode) params.append('productCode', productCode);
   if (startDate) params.append('startDate', startDate);
   if (endDate) params.append('endDate', endDate);
 
@@ -25,10 +25,10 @@ const getInventoryMovements = async (productId?: number, startDate?: string, end
   return data;
 };
 
-export const useInventoryMovements = (productId?: number, startDate?: string, endDate?: string) => {
+export const useInventoryMovements = (productCode?: string, startDate?: string, endDate?: string) => {
   return useQuery<InventoryMovement[], Error>({
-    queryKey: ['inventoryMovements', productId, startDate, endDate],
-    queryFn: () => getInventoryMovements(productId, startDate, endDate),
-    enabled: !!productId || (!!startDate && !!endDate),
+    queryKey: ['inventoryMovements', productCode, startDate, endDate],
+    queryFn: () => getInventoryMovements(productCode, startDate, endDate),
+    enabled: !!productCode || (!!startDate && !!endDate),
   });
 };

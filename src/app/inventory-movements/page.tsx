@@ -10,11 +10,11 @@ import { withAuth } from "@/app/components/withAuth"
 import { Input } from "@/components/ui/input"
 
 function InventoryMovementsPage() {
-    const [productId, setProductId] = useState<number | undefined>()
+    const [productCode, setProductCode] = useState<string>("")
     const [startDate, setStartDate] = useState<string>("")
     const [endDate, setEndDate] = useState<string>("")
 
-    const { data: movements, isLoading, error } = useInventoryMovements(productId, startDate, endDate)
+    const { data: movements, isLoading, error } = useInventoryMovements(productCode, startDate, endDate)
 
     return (
         <div className="container mx-auto py-8 px-4 max-w-7xl">
@@ -33,10 +33,10 @@ function InventoryMovementsPage() {
                     <CardTitle>Filtros</CardTitle>
                     <div className="flex gap-4">
                         <Input
-                            type="number"
-                            placeholder="ID del Producto"
-                            value={productId || ''}
-                            onChange={(e) => setProductId(Number(e.target.value))}
+                            type="text"
+                            placeholder="Código del Producto"
+                            value={productCode}
+                            onChange={(e) => setProductCode(e.target.value)}
                         />
                         <Input
                             type="date"
