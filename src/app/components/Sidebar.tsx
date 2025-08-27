@@ -12,6 +12,8 @@ import { useRouter } from "next/navigation"
 import { LogOut } from "lucide-react";
 import { useLogout } from "@/app/hooks/useLogout";
 
+import { AlertsDropdown } from "./AlertsDropdown";
+
 const USER_ROLES = {
     Administrator: ["dashboard", "clientes", "medicamentos", "usuarios", "categorias", "proveedores", "reportes", "invoices", 'backup-restore', 'inventory-movements'],
     Salesman: ["clientes", "medicamentos", "categorias", "invoices"],
@@ -86,14 +88,17 @@ export function Sidebar({ children }: SidebarProps) {
                                 <p className="text-xs text-sidebar-foreground/40 capitalize">{user.roles.join(", ")}</p>
                             </div>
                         )}
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => setIsCollapsed(!isCollapsed)}
-                            className="text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground"
-                        >
-                            {isCollapsed ? <Menu className="h-4 w-4" /> : <X className="h-4 w-4" />}
-                        </Button>
+                        <div className="flex items-center gap-2">
+                            <AlertsDropdown />
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => setIsCollapsed(!isCollapsed)}
+                                className="text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground"
+                            >
+                                {isCollapsed ? <Menu className="h-4 w-4" /> : <X className="h-4 w-4" />}
+                            </Button>
+                        </div>
                     </div>
 
                     {/* Navigation */}
