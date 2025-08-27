@@ -9,7 +9,7 @@ const instance = axios.create({
 instance.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response && error.response.status === 401) {
+    if (error.response && error.response.status === 401 && !error.config.url.includes("/auth/login")) {
       // Redirect to login page
       if (typeof window !== 'undefined') {
         window.location.href = '/login';
