@@ -5,7 +5,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { LayoutDashboard, Users, Pill, UserCheck, FolderOpen, Truck, Menu, X, FileText } from "lucide-react"
+import { LayoutDashboard, Users, Pill, UserCheck, FolderOpen, Truck, Menu, X, FileText, BookCopy, DatabaseBackup, Activity } from "lucide-react"
 import { useCurrentUser } from "@/app/hooks/useCurrentUser"
 import { useUser } from "@/app/context/UserContext"
 import { useRouter } from "next/navigation"
@@ -28,9 +28,9 @@ const navigationItems = [
     { name: "Categorías", href: "/categorias", icon: FolderOpen, key: "categorias" },
     { name: "Proveedores", href: "/proveedores", icon: Truck, key: "proveedores" },
     { name: "Facturas", href: "/invoices", icon: FileText, key: "invoices" },
-    { name: "Reportes", href: "/reports", icon: FileText, key: "reportes" },
-    { name: "Respaldo", href: "/backup-restore", icon: FileText, key: "backup-restore" },
-    { name: "Movimientos", href: "/inventory-movements", icon: FileText, key: "inventory-movements" }
+    { name: "Reportes", href: "/reports", icon: BookCopy, key: "reportes" },
+    { name: "Respaldo", href: "/backup-restore", icon: DatabaseBackup, key: "backup-restore" },
+    { name: "Movimientos", href: "/inventory-movements", icon: Activity, key: "inventory-movements" }
 ]
 
 interface SidebarProps {
