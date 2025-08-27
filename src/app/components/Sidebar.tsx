@@ -38,7 +38,7 @@ interface SidebarProps {
 }
 
 export function Sidebar({ children }: SidebarProps) {
-    const [isCollapsed, setIsCollapsed] = useState(false)
+    const [isCollapsed, setIsCollapsed] = useState(true)
     const pathname = usePathname()
     const { data: currentUser, isLoading, isError } = useCurrentUser()
     const { user, setUser } = useUser()
