@@ -12,12 +12,15 @@ import { useDeleteSupplier } from "@/app/hooks/useDeleteSupplier"
 import { DeleteSupplierConfirmationDialog } from "./delete-supplier-confirmation-dialog"
 import { Supplier } from "@/app/proveedores/types/supplier.dto"
 
+import { useCurrentUser } from "@/app/hooks/useCurrentUser"
+
 export default function SuppliersPage() {
     const [isDialogOpen, setIsDialogOpen] = useState(false)
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
     const [editingSupplier, setEditingSupplier] = useState<Supplier | null>(null)
     const [deletingSupplierId, setDeletingSupplierId] = useState<number | null>(null)
 
+    const { data: currentUser } = useCurrentUser()
     const { data: suppliers, isLoading, error } = useSuppliers()
     const { mutate: addSupplier, isPending: isAdding, error: addError, reset: resetAddError } = useAddSupplier()
     const { mutate: updateSupplier, isPending: isUpdating, error: updateError, reset: resetUpdateError } = useUpdateSupplier()
@@ -74,6 +77,8 @@ export default function SuppliersPage() {
         }
     }
 
+    const canManageSuppliers = currentUser?.roles.includes("Administrator") || currentUser?.roles.includes("Salesman");
+
     return (
         <div className="container mx-auto py-8 px-4 max-w-7xl">
             <div className="flex items-center justify-between mb-8">
@@ -86,10 +91,12 @@ export default function SuppliersPage() {
                         <p className="text-muted-foreground">Administra tus proveedores</p>
                     </div>
                 </div>
-                <Button onClick={openAddDialog} className="bg-primary hover:bg-primary/90">
-                    <Plus className="h-4 w-4 mr-2" />
-                    Nuevo Proveedor
-                </Button>
+                {canManageSuppliers && (
+                    <Button onClick={openAddDialog} className="bg-primary hover:bg-primary/90">
+                        <Plus className="h-4 w-4 mr-2" />
+                        Nuevo Proveedor
+                    </Button>
+                )}
             </div>
 
             <Card>
@@ -108,25 +115,29 @@ export default function SuppliersPage() {
                             <AlertDescription>{error.message}</AlertDescription>
                         </Alert>
                     )}
-                    {suppliers && <SuppliersTable suppliers={suppliers} onEdit={openEditDialog} onDelete={handleDeleteSupplier} />}
+                    {suppliers && <SuppliersTable suppliers={suppliers} onEdit={openEditDialog} onDelete={handleDeleteSupplier} canManageSuppliers={canManageSuppliers} />}
                 </CardContent>
             </Card>
 
-            <SupplierDialog
-                isOpen={isDialogOpen}
-                onOpenChange={handleDialogChange}
-                onSave={editingSupplier ? handleEditSupplier : handleAddSupplier}
-                supplier={editingSupplier}
-                isSaving={isAdding || isUpdating}
-                error={addError || updateError}
-            />
+            {canManageSuppliers && (
+                <SupplierDialog
+                    isOpen={isDialogOpen}
+                    onOpenChange={handleDialogChange}
+                    onSave={editingSupplier ? handleEditSupplier : handleAddSupplier}
+                    supplier={editingSupplier}
+                    isSaving={isAdding || isUpdating}
+                    error={addError || updateError}
+                />
+            )}
 
-            <DeleteSupplierConfirmationDialog
-                isOpen={isDeleteDialogOpen}
-                onOpenChange={setIsDeleteDialogOpen}
-                onConfirm={confirmDelete}
-                isDeleting={isDeleting}
-            />
+            {canManageSuppliers && (
+                <DeleteSupplierConfirmationDialog
+                    isOpen={isDeleteDialogOpen}
+                    onOpenChange={setIsDeleteDialogOpen}
+                    onConfirm={confirmDelete}
+                    isDeleting={isDeleting}
+                />
+            )}
         </div>
     )
 }

@@ -10,9 +10,10 @@ interface InvoicesTableProps {
     invoices: Invoice[]
     onView: (id: number) => void
     onDelete: (id: number) => void
+    canManageInvoices: boolean | undefined
 }
 
-export function InvoicesTable({ invoices, onView, onDelete }: InvoicesTableProps) {
+export function InvoicesTable({ invoices, onView, onDelete, canManageInvoices }: InvoicesTableProps) {
     const [searchTerm, setSearchTerm] = useState("")
     const [currentPage, setCurrentPage] = useState(1)
     const itemsPerPage = 10
@@ -62,7 +63,7 @@ export function InvoicesTable({ invoices, onView, onDelete }: InvoicesTableProps
                             <TableHead className="font-semibold">Cliente</TableHead>
                             <TableHead className="font-semibold">Vendedor</TableHead>
                             <TableHead className="font-semibold">Total</TableHead>
-                            <TableHead className="text-right font-semibold">Acciones</TableHead>
+                            {canManageInvoices && <TableHead className="text-right font-semibold">Acciones</TableHead>}
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -73,18 +74,20 @@ export function InvoicesTable({ invoices, onView, onDelete }: InvoicesTableProps
                                 <TableCell>{invoice.customer.customerName}</TableCell>
                                 <TableCell>{invoice.user.name}</TableCell>
                                 <TableCell className="font-medium">{formatPrice(invoice.total)}</TableCell>
-                                <TableCell className="text-right">
-                                    <div className="flex gap-2 justify-end">
-                                        <Button size="sm" variant="outline" onClick={() => onView(invoice.idInvoice)}>
-                                            <Eye className="h-4 w-4 mr-1" />
-                                            Ver
-                                        </Button>
-                                        <Button size="sm" variant="destructive" onClick={() => onDelete(invoice.idInvoice)}>
-                                            <Trash2 className="h-4 w-4 mr-1" />
-                                            Eliminar
-                                        </Button>
-                                    </div>
-                                </TableCell>
+                                {canManageInvoices && (
+                                    <TableCell className="text-right">
+                                        <div className="flex gap-2 justify-end">
+                                            <Button size="sm" variant="outline" onClick={() => onView(invoice.idInvoice)}>
+                                                <Eye className="h-4 w-4 mr-1" />
+                                                Ver
+                                            </Button>
+                                            <Button size="sm" variant="destructive" onClick={() => onDelete(invoice.idInvoice)}>
+                                                <Trash2 className="h-4 w-4 mr-1" />
+                                                Eliminar
+                                            </Button>
+                                        </div>
+                                    </TableCell>
+                                )}
                             </TableRow>
                         ))}
                     </TableBody>

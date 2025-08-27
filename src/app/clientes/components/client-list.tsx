@@ -17,6 +17,8 @@ import { ClientFormDialog } from "./ClientFormDialog"
 import { ClientSchema } from "../types/cliente.schema"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
+import { useCurrentUser } from "@/app/hooks/useCurrentUser"
+
 interface ClientesListProps {
     onCreateVenta: (cliente: Customer) => void
 }
@@ -27,6 +29,7 @@ export function ClientesList({ onCreateVenta }: ClientesListProps) {
     const [editingClient, setEditingClient] = useState<Customer | null>(null)
     const [togglingClientId, setTogglingClientId] = useState<number | null>(null)
 
+    const { data: currentUser } = useCurrentUser()
     const debouncedSearchTerm = useDebounce(searchTerm, 500)
 
     const { data: allClientes, isLoading: isLoadingAll, error: allClientsError } = useClients()
@@ -42,6 +45,8 @@ export function ClientesList({ onCreateVenta }: ClientesListProps) {
 
     const activeClients = clientes?.filter(c => c.deletedAt === null) || []
     const inactiveClients = clientes?.filter(c => c.deletedAt !== null) || []
+
+    const canManageClients = currentUser?.roles.includes("Administrator") || currentUser?.roles.includes("Salesman");
 
     const onSubmit = (data: ClientSchema) => {
         if (editingClient) {
@@ -89,15 +94,17 @@ export function ClientesList({ onCreateVenta }: ClientesListProps) {
                 <CardHeader>
                     <div className="flex items-center justify-between">
                         <CardTitle className="text-2xl font-semibold text-foreground">Gestión de Clientes</CardTitle>
-                        <ClientFormDialog
-                            isOpen={isModalOpen}
-                            onOpenChange={handleModalOpenChange}
-                            onSubmit={onSubmit}
-                            editingClient={editingClient}
-                            isAdding={isAddingClient}
-                            isUpdating={isUpdatingClient}
-                            error={addClientError || updateClientError}
-                        />
+                        {canManageClients && (
+                            <ClientFormDialog
+                                isOpen={isModalOpen}
+                                onOpenChange={handleModalOpenChange}
+                                onSubmit={onSubmit}
+                                editingClient={editingClient}
+                                isAdding={isAddingClient}
+                                isUpdating={isUpdatingClient}
+                                error={addClientError || updateClientError}
+                            />
+                        )}
                     </div>
                 </CardHeader>
                 <CardContent>
@@ -136,6 +143,7 @@ export function ClientesList({ onCreateVenta }: ClientesListProps) {
                                     onCreateSale={onCreateVenta}
                                     isTogglingStatus={isTogglingStatus}
                                     togglingClientId={togglingClientId}
+                                    canManageClients={canManageClients}
                                 />
                             )}
                             {!isLoading && !error && activeClients?.length === 0 && (
@@ -163,6 +171,7 @@ export function ClientesList({ onCreateVenta }: ClientesListProps) {
                                     onCreateSale={onCreateVenta}
                                     isTogglingStatus={isTogglingStatus}
                                     togglingClientId={togglingClientId}
+                                    canManageClients={canManageClients}
                                 />
                             )}
                             {!isLoading && !error && inactiveClients?.length === 0 && (

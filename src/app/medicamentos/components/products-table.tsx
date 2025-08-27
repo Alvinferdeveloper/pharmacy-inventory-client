@@ -14,9 +14,10 @@ interface ProductsTableProps {
     products: Product[]
     onEdit: (product: Product) => void
     onDelete: (id: number) => void
+    canManageProducts: boolean | undefined
 }
 
-export function ProductsTable({ products, onEdit, onDelete }: ProductsTableProps) {
+export function ProductsTable({ products, onEdit, onDelete, canManageProducts }: ProductsTableProps) {
     const [searchTerm, setSearchTerm] = useState("")
     const [currentPage, setCurrentPage] = useState(1)
     const itemsPerPage = 6
@@ -75,7 +76,7 @@ export function ProductsTable({ products, onEdit, onDelete }: ProductsTableProps
                             <TableHead className="font-semibold">Precio Venta</TableHead>
                             <TableHead className="font-semibold">Vencimiento</TableHead>
                             <TableHead className="font-semibold">Proveedor</TableHead>
-                            <TableHead className="text-right font-semibold">Acciones</TableHead>
+                            {canManageProducts && <TableHead className="text-right font-semibold">Acciones</TableHead>}
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -91,7 +92,7 @@ export function ProductsTable({ products, onEdit, onDelete }: ProductsTableProps
                                         </div>
                                     </TableCell>
                                     <TableCell>
-                                        <Badge variant="default" className="bg-green-500">{product.category.categoryName}</Badge>
+                                        <Badge variant="outline">{product.category.categoryName}</Badge>
                                     </TableCell>
                                     <TableCell>
                                         <div className="flex items-center gap-2">
@@ -111,25 +112,27 @@ export function ProductsTable({ products, onEdit, onDelete }: ProductsTableProps
                                             <div className="text-muted-foreground">{product.supplier.phone}</div>
                                         </div>
                                     </TableCell>
-                                    <TableCell className="text-right">
-                                        <DropdownMenu>
-                                            <DropdownMenuTrigger asChild>
-                                                <Button variant="ghost" className="h-8 w-8 p-0">
-                                                    <MoreHorizontal className="h-4 w-4" />
-                                                </Button>
-                                            </DropdownMenuTrigger>
-                                            <DropdownMenuContent align="end">
-                                                <DropdownMenuItem onClick={() => onEdit(product)} className="group">
-                                                    <Edit className="mr-2 h-4 w-4 group-hover:text-accent-foreground" />
-                                                    Editar
-                                                </DropdownMenuItem>
-                                                <DropdownMenuItem onClick={() => onDelete(product.idProduct)} className="text-destructive group">
-                                                    <Trash2 className="mr-2 h-4 w-4 group-hover:text-destructive" />
-                                                    Eliminar
-                                                </DropdownMenuItem>
-                                            </DropdownMenuContent>
-                                        </DropdownMenu>
-                                    </TableCell>
+                                    {canManageProducts && (
+                                        <TableCell className="text-right">
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger asChild>
+                                                    <Button variant="ghost" className="h-8 w-8 p-0">
+                                                        <MoreHorizontal className="h-4 w-4" />
+                                                    </Button>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent align="end">
+                                                    <DropdownMenuItem onClick={() => onEdit(product)}>
+                                                        <Edit className="mr-2 h-4 w-4" />
+                                                        Editar
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem onClick={() => onDelete(product.idProduct)} className="text-destructive">
+                                                        <Trash2 className="mr-2 h-4 w-4" />
+                                                        Eliminar
+                                                    </DropdownMenuItem>
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
+                                        </TableCell>
+                                    )}
                                 </TableRow>
                             )
                         })}

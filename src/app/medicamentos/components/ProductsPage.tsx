@@ -12,12 +12,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Plus, Package, Loader2 } from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 
+import { useCurrentUser } from "@/app/hooks/useCurrentUser"
+
 export default function ProductsPage() {
     const [isDialogOpen, setIsDialogOpen] = useState(false)
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
     const [editingProduct, setEditingProduct] = useState<Product | null>(null)
     const [deletingProductId, setDeletingProductId] = useState<number | null>(null)
 
+    const { data: currentUser } = useCurrentUser()
     const { data: products, isLoading, error } = useProducts()
     const { mutate: addProduct, isPending: isAdding, error: addError, reset: resetAddError } = useAddProduct()
     const { mutate: updateProduct, isPending: isUpdating, error: updateError, reset: resetUpdateError } = useUpdateProduct()
@@ -74,6 +77,8 @@ export default function ProductsPage() {
         }
     }
 
+    const canManageProducts = currentUser?.roles.includes("Administrator") || currentUser?.roles.includes("Salesman");
+
     return (
         <div className="container mx-auto py-8 px-4 max-w-7xl">
             <div className="flex items-center justify-between mb-8">
@@ -86,10 +91,12 @@ export default function ProductsPage() {
                         <p className="text-muted-foreground">Administra tu inventario de productos</p>
                     </div>
                 </div>
-                <Button onClick={openAddDialog} className="bg-primary hover:bg-primary/90">
-                    <Plus className="h-4 w-4 mr-2" />
-                    Nuevo Producto
-                </Button>
+                {canManageProducts && (
+                    <Button onClick={openAddDialog} className="bg-primary hover:bg-primary/90">
+                        <Plus className="h-4 w-4 mr-2" />
+                        Nuevo Producto
+                    </Button>
+                )}
             </div>
 
             <Card>
@@ -108,25 +115,29 @@ export default function ProductsPage() {
                             <AlertDescription>{error.message}</AlertDescription>
                         </Alert>
                     )}
-                    {products && <ProductsTable products={products} onEdit={openEditDialog} onDelete={handleDeleteProduct} />}
+                    {products && <ProductsTable products={products} onEdit={openEditDialog} onDelete={handleDeleteProduct} canManageProducts={canManageProducts} />}
                 </CardContent>
             </Card>
 
-            <ProductDialog
-                isOpen={isDialogOpen}
-                onOpenChange={handleDialogChange}
-                onSave={editingProduct ? handleEditProduct : handleAddProduct}
-                product={editingProduct}
-                isSaving={isAdding || isUpdating}
-                error={addError || updateError}
-            />
+            {canManageProducts && (
+                <ProductDialog
+                    isOpen={isDialogOpen}
+                    onOpenChange={handleDialogChange}
+                    onSave={editingProduct ? handleEditProduct : handleAddProduct}
+                    product={editingProduct}
+                    isSaving={isAdding || isUpdating}
+                    error={addError || updateError}
+                />
+            )}
 
-            <DeleteProductConfirmationDialog
-                isOpen={isDeleteDialogOpen}
-                onOpenChange={() => setIsDeleteDialogOpen(false)}
-                onConfirm={confirmDelete}
-                isDeleting={isDeleting}
-            />
+            {canManageProducts && (
+                <DeleteProductConfirmationDialog
+                    isOpen={isDeleteDialogOpen}
+                    onOpenChange={() => setIsDeleteDialogOpen(false)}
+                    onConfirm={confirmDelete}
+                    isDeleting={isDeleting}
+                />
+            )}
         </div>
     )
 }

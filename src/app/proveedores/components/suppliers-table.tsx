@@ -11,9 +11,10 @@ interface SuppliersTableProps {
   suppliers: Supplier[]
   onEdit: (supplier: Supplier) => void
   onDelete: (id: number) => void
+  canManageSuppliers: boolean | undefined
 }
 
-export function SuppliersTable({ suppliers, onEdit, onDelete }: SuppliersTableProps) {
+export function SuppliersTable({ suppliers, onEdit, onDelete, canManageSuppliers }: SuppliersTableProps) {
   const [searchTerm, setSearchTerm] = useState("")
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 10
@@ -49,7 +50,7 @@ export function SuppliersTable({ suppliers, onEdit, onDelete }: SuppliersTablePr
               <TableHead className="font-semibold">Email</TableHead>
               <TableHead className="font-semibold">Teléfono</TableHead>
               <TableHead className="font-semibold">Dirección</TableHead>
-              <TableHead className="text-right font-semibold">Acciones</TableHead>
+              {canManageSuppliers && <TableHead className="text-right font-semibold">Acciones</TableHead>}
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -59,16 +60,18 @@ export function SuppliersTable({ suppliers, onEdit, onDelete }: SuppliersTablePr
                 <TableCell>{supplier.email}</TableCell>
                 <TableCell>{supplier.phone}</TableCell>
                 <TableCell>{supplier.address}</TableCell>
-                <TableCell className="text-right">
-                  <div className="flex gap-2 justify-end">
-                    <Button size="sm" variant="outline" onClick={() => onEdit(supplier)}>
-                      <Edit className="w-4 h-4" />
-                    </Button>
-                    <Button size="sm" variant="destructive" onClick={() => onDelete(supplier.idSupplier)}>
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </TableCell>
+                {canManageSuppliers && (
+                  <TableCell className="text-right">
+                    <div className="flex gap-2 justify-end">
+                      <Button size="sm" variant="outline" onClick={() => onEdit(supplier)}>
+                        <Edit className="w-4 h-4" />
+                      </Button>
+                      <Button size="sm" variant="destructive" onClick={() => onDelete(supplier.idSupplier)}>
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </TableCell>
+                )}
               </TableRow>
             ))}
           </TableBody>

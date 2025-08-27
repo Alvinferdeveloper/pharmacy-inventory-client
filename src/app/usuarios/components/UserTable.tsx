@@ -8,15 +8,17 @@ import { Edit, Search } from "lucide-react"
 import { User } from "@/app/hooks/useUsers"
 import { Loader2, UserX, Power } from "lucide-react"
 
+
 interface UserTableProps {
     users: User[]
     onEdit: (user: User) => void
-    onToggleStatus: (id: number) => void
+    onToggleStatus: (id: number, isActive: boolean) => void
     isTogglingStatus: boolean
     togglingUserId: number | null
+    canManageUsers: boolean | undefined
 }
 
-export function UserTable({ users, onEdit, onToggleStatus, isTogglingStatus, togglingUserId }: UserTableProps) {
+export function UserTable({ users, onEdit, onToggleStatus, isTogglingStatus, togglingUserId, canManageUsers }: UserTableProps) {
     const [searchTerm, setSearchTerm] = useState("")
     const [currentPage, setCurrentPage] = useState(1)
     const itemsPerPage = 10
@@ -61,7 +63,7 @@ export function UserTable({ users, onEdit, onToggleStatus, isTogglingStatus, tog
                             <TableHead className="font-semibold">Usuario</TableHead>
                             <TableHead className="font-semibold">Rol</TableHead>
                             <TableHead className="font-semibold">Estado</TableHead>
-                            <TableHead className="text-right font-semibold">Acciones</TableHead>
+                            {canManageUsers && <TableHead className="text-right font-semibold">Acciones</TableHead>}
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -82,27 +84,29 @@ export function UserTable({ users, onEdit, onToggleStatus, isTogglingStatus, tog
                                             {isActive ? "Activo" : "Inactivo"}
                                         </Badge>
                                     </TableCell>
-                                    <TableCell className="text-right">
-                                        <div className="flex items-center justify-end gap-2">
-                                            <Button variant="outline" size="icon" onClick={() => onEdit(user)}>
-                                                <Edit className="h-4 w-4" />
-                                            </Button>
-                                            <Button
-                                                variant={isActive ? "destructive" : "default"}
-                                                size="icon"
-                                                onClick={() => onToggleStatus(user.idUser)}
-                                                disabled={isTogglingStatus && togglingUserId === user.idUser}
-                                            >
-                                                {isTogglingStatus && togglingUserId === user.idUser ? (
-                                                    <Loader2 className="h-4 w-4 animate-spin" />
-                                                ) : isActive ? (
-                                                    <UserX className="h-4 w-4" />
-                                                ) : (
-                                                    <Power className="h-4 w-4" />
-                                                )}
-                                            </Button>
-                                        </div>
-                                    </TableCell>
+                                    {canManageUsers && (
+                                        <TableCell className="text-right">
+                                            <div className="flex items-center justify-end gap-2">
+                                                <Button variant="outline" size="icon" onClick={() => onEdit(user)}>
+                                                    <Edit className="h-4 w-4" />
+                                                </Button>
+                                                <Button
+                                                    variant={isActive ? "destructive" : "default"}
+                                                    size="icon"
+                                                    onClick={() => onToggleStatus(user.idUser, !isActive)}
+                                                    disabled={isTogglingStatus && togglingUserId === user.idUser}
+                                                >
+                                                    {isTogglingStatus && togglingUserId === user.idUser ? (
+                                                        <Loader2 className="h-4 w-4 animate-spin" />
+                                                    ) : isActive ? (
+                                                        <UserX className="h-4 w-4" />
+                                                    ) : (
+                                                        <Power className="h-4 w-4" />
+                                                    )}
+                                                </Button>
+                                            </div>
+                                        </TableCell>
+                                    )}
                                 </TableRow>
                             )
                         })}

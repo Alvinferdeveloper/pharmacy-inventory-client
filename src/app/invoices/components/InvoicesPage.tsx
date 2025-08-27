@@ -9,12 +9,15 @@ import { InvoiceDetails } from "./InvoiceDetails"
 import { useInvoice } from "@/app/hooks/useInvoice"
 import { DeleteUserConfirmationDialog } from "../../usuarios/components/DeleteUserConfirmationDialog"
 
+import { useCurrentUser } from "@/app/hooks/useCurrentUser"
+
 export default function InvoicesPage() {
     const [selectedInvoiceId, setSelectedInvoiceId] = useState<number | null>(null)
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
     const [deletingInvoiceId, setDeletingInvoiceId] = useState<number | null>(null)
     const [searchDate, setSearchDate] = useState<string>("")
 
+    const { data: currentUser } = useCurrentUser()
     const { data: invoices, isLoading, error } = useInvoices(searchDate)
     const { data: selectedInvoice, isLoading: isLoadingInvoice } = useInvoice(selectedInvoiceId!)
     const { mutate: deleteInvoice, isPending: isDeleting } = useDeleteInvoice()
@@ -42,6 +45,8 @@ export default function InvoicesPage() {
     const handleBackToInvoices = () => {
         setSelectedInvoiceId(null)
     }
+
+    const canManageInvoices = currentUser?.roles.includes("Administrator") || currentUser?.roles.includes("Salesman");
 
     if (selectedInvoiceId && selectedInvoice) {
         return <InvoiceDetails invoice={selectedInvoice} onBack={handleBackToInvoices} />
@@ -85,7 +90,7 @@ export default function InvoicesPage() {
                             <AlertDescription>{error.message}</AlertDescription>
                         </Alert>
                     )}
-                    {invoices && <InvoicesTable invoices={invoices} onView={handleViewDetails} onDelete={handleDeleteInvoice} />}
+                    {invoices && <InvoicesTable invoices={invoices} onView={handleViewDetails} onDelete={handleDeleteInvoice} canManageInvoices={canManageInvoices} />}
                 </CardContent>
             </Card>
 

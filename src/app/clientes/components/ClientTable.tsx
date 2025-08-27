@@ -13,9 +13,10 @@ interface ClientTableProps {
   onCreateSale: (client: Customer) => void
   isTogglingStatus: boolean
   togglingClientId: number | null
+  canManageClients: boolean | undefined
 }
 
-export function ClientTable({ clients, onEdit, onToggleStatus, onCreateSale, isTogglingStatus, togglingClientId }: ClientTableProps) {
+export function ClientTable({ clients, onEdit, onToggleStatus, onCreateSale, isTogglingStatus, togglingClientId, canManageClients }: ClientTableProps) {
   return (
     <div className="rounded-md border bg-card shadow-sm">
       <Table>
@@ -24,7 +25,7 @@ export function ClientTable({ clients, onEdit, onToggleStatus, onCreateSale, isT
             <TableHead className="font-semibold">Cliente</TableHead>
             <TableHead className="font-semibold">Contacto</TableHead>
             <TableHead className="font-semibold">Estado</TableHead>
-            <TableHead className="text-right font-semibold">Acciones</TableHead>
+            {canManageClients && <TableHead className="text-right font-semibold">Acciones</TableHead>}
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -60,36 +61,38 @@ export function ClientTable({ clients, onEdit, onToggleStatus, onCreateSale, isT
                     {isActive ? "Activo" : "Inactivo"}
                   </Badge>
                 </TableCell>
-                <TableCell className="text-right">
-                  <div className="flex gap-2 justify-end">
-                    <Button
-                      size="sm"
-                      onClick={() => onCreateSale(client)}
-                      className="bg-primary hover:bg-primary/90"
-                      disabled={!isActive}
-                    >
-                      <ShoppingCart className="w-4 h-4 mr-1" />
-                      Crear Venta
-                    </Button>
-                    <Button size="sm" variant="outline" onClick={() => onEdit(client)}>
-                      <Edit className="w-4 h-4" />
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant={isActive ? "destructive" : "default"}
-                      onClick={() => onToggleStatus(client.idCustomer)}
-                      disabled={isTogglingStatus && togglingClientId === client.idCustomer}
-                    >
-                      {isTogglingStatus && togglingClientId === client.idCustomer ? (
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                      ) : isActive ? (
-                        <UserX className="h-4 w-4" />
-                      ) : (
-                        <Power className="h-4 w-4" />
-                      )}
-                    </Button>
-                  </div>
-                </TableCell>
+                {canManageClients && (
+                  <TableCell className="text-right">
+                    <div className="flex gap-2 justify-end">
+                      <Button
+                        size="sm"
+                        onClick={() => onCreateSale(client)}
+                        className="bg-primary hover:bg-primary/90"
+                        disabled={!isActive}
+                      >
+                        <ShoppingCart className="w-4 h-4 mr-1" />
+                        Crear Venta
+                      </Button>
+                      <Button size="sm" variant="outline" onClick={() => onEdit(client)}>
+                        <Edit className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant={isActive ? "destructive" : "default"}
+                        onClick={() => onToggleStatus(client.idCustomer)}
+                        disabled={isTogglingStatus && togglingClientId === client.idCustomer}
+                      >
+                        {isTogglingStatus && togglingClientId === client.idCustomer ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : isActive ? (
+                          <UserX className="h-4 w-4" />
+                        ) : (
+                          <Power className="h-4 w-4" />
+                        )}
+                      </Button>
+                    </div>
+                  </TableCell>
+                )}
               </TableRow>
             )
           })}

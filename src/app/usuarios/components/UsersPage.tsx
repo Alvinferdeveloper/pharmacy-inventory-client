@@ -15,6 +15,8 @@ import { useAddUser } from "@/app/hooks/useAddUser"
 import { User } from "@/app/hooks/useUsers"
 
 
+import { useCurrentUser } from "@/app/hooks/useCurrentUser"
+
 export default function UsersPage() {
     const [isDialogOpen, setIsDialogOpen] = useState(false)
     const [isTempPasswordDialogOpen, setIsTempPasswordDialogOpen] = useState(false)
@@ -22,6 +24,7 @@ export default function UsersPage() {
     const [editingUser, setEditingUser] = useState<User | null>(null)
     const [togglingUserId, setTogglingUserId] = useState<number | null>(null)
 
+    const { data: currentUser } = useCurrentUser()
     const { data: users, isLoading, error } = useUsers()
     const { mutate: addUser, isPending: isAdding, error: addError, reset: resetAddError } = useAddUser()
     const { mutate: updateUser, isPending: isUpdating, error: updateError, reset: resetUpdateError } = useUpdateUser()
@@ -76,6 +79,8 @@ export default function UsersPage() {
         }
     }
 
+    const canManageUsers = currentUser?.roles.includes("Administrator");
+
     return (
         <div className="container mx-auto py-8 px-4 max-w-7xl">
             <div className="flex items-center justify-between mb-8">
@@ -88,10 +93,12 @@ export default function UsersPage() {
                         <p className="text-muted-foreground">Administra los usuarios del sistema</p>
                     </div>
                 </div>
-                <Button onClick={openAddDialog} className="bg-primary hover:bg-primary/90">
-                    <Plus className="h-4 w-4 mr-2" />
-                    Nuevo Usuario
-                </Button>
+                {canManageUsers && (
+                    <Button onClick={openAddDialog} className="bg-primary hover:bg-primary/90">
+                        <Plus className="h-4 w-4 mr-2" />
+                        Nuevo Usuario
+                    </Button>
+                )}
             </div>
 
             <Card>
@@ -110,18 +117,20 @@ export default function UsersPage() {
                             <AlertDescription>{error.message}</AlertDescription>
                         </Alert>
                     )}
-                    {users && <UserTable users={users} onEdit={openEditDialog} onToggleStatus={handleToggleUserStatus} isTogglingStatus={isTogglingStatus} togglingUserId={togglingUserId} />}
+                    {users && <UserTable users={users} onEdit={openEditDialog} onToggleStatus={handleToggleUserStatus} isTogglingStatus={isTogglingStatus} togglingUserId={togglingUserId} canManageUsers={canManageUsers} />}
                 </CardContent>
             </Card>
 
-            <UserFormDialog
-                isOpen={isDialogOpen}
-                onOpenChange={handleDialogChange}
-                onSubmit={editingUser ? handleEditUser : handleAddUser}
-                editingUser={editingUser}
-                isSaving={isAdding || isUpdating}
-                error={addError || updateError}
-            />
+            {canManageUsers && (
+                <UserFormDialog
+                    isOpen={isDialogOpen}
+                    onOpenChange={handleDialogChange}
+                    onSubmit={editingUser ? handleEditUser : handleAddUser}
+                    editingUser={editingUser}
+                    isSaving={isAdding || isUpdating}
+                    error={addError || updateError}
+                />
+            )}
 
             <TemporaryPasswordDialog
                 isOpen={isTempPasswordDialogOpen}

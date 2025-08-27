@@ -13,12 +13,15 @@ import { CategoryDialog } from "./category-dialog"
 import { DeleteCategoryConfirmationDialog } from "./delete-category-dialog"
 import { CategorySchema } from "./category-dialog"
 
+import { useCurrentUser } from "@/app/hooks/useCurrentUser"
+
 export default function CategoriesPage() {
     const [isDialogOpen, setIsDialogOpen] = useState(false)
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
     const [editingCategory, setEditingCategory] = useState<Category | null>(null)
     const [deletingCategoryId, setDeletingCategoryId] = useState<number | null>(null)
     const [searchTerm, setSearchTerm] = useState("")
+    const { data: currentUser } = useCurrentUser()
     const { data: categories, isLoading, error } = useCategories()
     const { mutate: addCategory, isPending: isAdding, error: addError, reset: resetAddError } = useAddCategory()
     const { mutate: updateCategory, isPending: isUpdating, error: updateError, reset: resetUpdateError } = useUpdateCategory()
@@ -76,6 +79,8 @@ export default function CategoriesPage() {
         }
     }
 
+    const canManageCategories = currentUser?.roles.includes("Administrator") || currentUser?.roles.includes("Salesman");
+
     return (
         <div className="container mx-auto py-8 px-4 max-w-7xl">
             <div className="flex items-center justify-between mb-8">
@@ -88,10 +93,12 @@ export default function CategoriesPage() {
                         <p className="text-muted-foreground">Administra las categorías de tus productos</p>
                     </div>
                 </div>
-                <Button onClick={openAddDialog} className="bg-primary hover:bg-primary/90">
-                    <Plus className="h-4 w-4 mr-2" />
-                    Nueva Categoría
-                </Button>
+                {canManageCategories && (
+                    <Button onClick={openAddDialog} className="bg-primary hover:bg-primary/90">
+                        <Plus className="h-4 w-4 mr-2" />
+                        Nueva Categoría
+                    </Button>
+                )}
             </div>
 
             <Card>
@@ -117,6 +124,7 @@ export default function CategoriesPage() {
                             onDelete={handleDeleteCategory}
                             searchTerm={searchTerm}
                             setSearchTerm={setSearchTerm}
+                            canManageCategories={canManageCategories}
                         />
                     )}
 
@@ -128,21 +136,25 @@ export default function CategoriesPage() {
                 </CardContent>
             </Card>
 
-            <CategoryDialog
-                isOpen={isDialogOpen}
-                onOpenChange={handleDialogChange}
-                onSubmit={editingCategory ? handleEditCategory : handleAddCategory}
-                editingCategory={editingCategory}
-                isSaving={isAdding || isUpdating}
-                error={addError || updateError}
-            />
+            {canManageCategories && (
+                <CategoryDialog
+                    isOpen={isDialogOpen}
+                    onOpenChange={handleDialogChange}
+                    onSubmit={editingCategory ? handleEditCategory : handleAddCategory}
+                    editingCategory={editingCategory}
+                    isSaving={isAdding || isUpdating}
+                    error={addError || updateError}
+                />
+            )}
 
-            <DeleteCategoryConfirmationDialog
-                isOpen={isDeleteDialogOpen}
-                onOpenChange={() => setIsDeleteDialogOpen(false)}
-                onConfirm={confirmDelete}
-                isDeleting={isDeleting}
-            />
+            {canManageCategories && (
+                <DeleteCategoryConfirmationDialog
+                    isOpen={isDeleteDialogOpen}
+                    onOpenChange={() => setIsDeleteDialogOpen(false)}
+                    onConfirm={confirmDelete}
+                    isDeleting={isDeleting}
+                />
+            )}
         </div>
     )
 }

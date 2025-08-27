@@ -15,9 +15,10 @@ interface CategoriesTableProps {
     onDelete: (id: number) => void
     searchTerm: string
     setSearchTerm: (term: string) => void
+    canManageCategories: boolean | undefined
 }
 
-export function CategoriesTable({ categories, onEdit, onDelete, searchTerm, setSearchTerm }: CategoriesTableProps) {
+export function CategoriesTable({ categories, onEdit, onDelete, searchTerm, setSearchTerm, canManageCategories }: CategoriesTableProps) {
     const [currentPage, setCurrentPage] = useState(1)
     const itemsPerPage = 6
 
@@ -50,15 +51,15 @@ export function CategoriesTable({ categories, onEdit, onDelete, searchTerm, setS
                         <TableRow className="bg-muted/50">
                             <TableHead className="font-semibold">Nombre</TableHead>
                             <TableHead className="font-semibold">Descripción</TableHead>
-                            <TableHead className="text-right font-semibold">Acciones</TableHead>
+                            {canManageCategories && <TableHead className="text-right font-semibold">Acciones</TableHead>}
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {paginatedCategories.map((category) => {
-                            return (
-                                <TableRow key={category.idCategory} className="hover:bg-muted/30 transition-colors">
-                                    <TableCell className="font-medium">{category.categoryName}</TableCell>
-                                    <TableCell className="text-sm text-muted-foreground">{category.description}</TableCell>
+                        {paginatedCategories.map((category) => (
+                            <TableRow key={category.idCategory} className="hover:bg-muted/30 transition-colors">
+                                <TableCell className="font-medium">{category.categoryName}</TableCell>
+                                <TableCell className="text-sm text-muted-foreground">{category.description}</TableCell>
+                                {canManageCategories && (
                                     <TableCell className="text-right">
                                         <div className="flex gap-2 justify-end">
                                             <Button size="sm" variant="outline" onClick={() => onEdit(category)}>
@@ -69,9 +70,9 @@ export function CategoriesTable({ categories, onEdit, onDelete, searchTerm, setS
                                             </Button>
                                         </div>
                                     </TableCell>
-                                </TableRow>
-                            )
-                        })}
+                                )}
+                            </TableRow>
+                        ))}
                     </TableBody>
                 </Table>
             </div>
