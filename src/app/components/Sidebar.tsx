@@ -73,14 +73,14 @@ export function Sidebar({ children }: SidebarProps) {
             <div
                 className={cn(
                     "fixed h-full bg-sidebar border-r border-sidebar-border transition-all duration-300 z-10",
-                    isCollapsed ? "w-16" : "w-64"
+                    isCollapsed ? "w-16" : "w-64 md:w-64"
                 )}
             >
                 <div className="flex h-full flex-col">
                     {/* Header */}
                     <div className="flex items-center justify-between p-4 border-b border-sidebar-border">
                         {!isCollapsed && user && (
-                            <div>
+                            <div className="flex-1">
                                 <h2 className="text-lg font-semibold text-sidebar-foreground">Farmacia App</h2>
                                 <p className="text-sm text-sidebar-foreground/60">{user.identification}</p>
                                 <p className="text-xs text-sidebar-foreground/60">{user.phone}</p>
@@ -88,16 +88,16 @@ export function Sidebar({ children }: SidebarProps) {
                                 <p className="text-xs text-sidebar-foreground/40 capitalize">{user.roles.join(", ")}</p>
                             </div>
                         )}
-                        <div className="flex items-center gap-2">
-                            <AlertsDropdown />
+                        <div className="flex items-center flex-col gap-2 ml-auto">
                             <Button
                                 variant="ghost"
                                 size="icon"
                                 onClick={() => setIsCollapsed(!isCollapsed)}
-                                className="text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground"
+                                className="text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground md:flex md:items-center md:justify-center hidden"
                             >
                                 {isCollapsed ? <Menu className="h-4 w-4" /> : <X className="h-4 w-4" />}
                             </Button>
+                            <AlertsDropdown />
                         </div>
                     </div>
 
@@ -142,7 +142,7 @@ export function Sidebar({ children }: SidebarProps) {
 
             <main className={cn(
                 "flex-1 transition-all duration-300 overflow-y-auto",
-                isCollapsed ? "ml-16" : "ml-64"
+                isCollapsed ? "ml-16" : "ml-64 md:ml-64"
             )}>{children}</main>
         </div>
     )
