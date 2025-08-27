@@ -13,9 +13,9 @@ import { LogOut } from "lucide-react";
 import { useLogout } from "@/app/hooks/useLogout";
 
 const USER_ROLES = {
-    Administrator: ["dashboard", "clientes", "medicamentos", "usuarios", "categorias", "proveedores", "reportes", "invoices", 'backup-restore'],
+    Administrator: ["dashboard", "clientes", "medicamentos", "usuarios", "categorias", "proveedores", "reportes", "invoices", 'backup-restore', 'inventory-movements'],
     Salesman: ["clientes", "medicamentos", "categorias", "invoices"],
-    Consultant: ["dashboard", "clientes", "medicamentos", "reportes", "invoices"],
+    Consultant: ["dashboard", "clientes", "medicamentos", "reportes", "invoices", 'inventory-movements'],
 }
 
 const navigationItems = [
@@ -27,7 +27,8 @@ const navigationItems = [
     { name: "Proveedores", href: "/proveedores", icon: Truck, key: "proveedores" },
     { name: "Facturas", href: "/invoices", icon: FileText, key: "invoices" },
     { name: "Reportes", href: "/reports", icon: FileText, key: "reportes" },
-    { name: "Respaldo", href: "/backup-restore", icon: FileText, key: "backup-restore" }
+    { name: "Respaldo", href: "/backup-restore", icon: FileText, key: "backup-restore" },
+    { name: "Movimientos", href: "/inventory-movements", icon: FileText, key: "inventory-movements" }
 ]
 
 interface SidebarProps {
