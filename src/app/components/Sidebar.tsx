@@ -131,7 +131,7 @@ export function Sidebar({ children }: SidebarProps) {
                         <Button
                             variant="ghost"
                             onClick={() => logout()}
-                            className="w-full justify-start gap-3 text-primary-foreground hover:bg-destructive/80 hover:text-destructive-foreground"
+                            className="w-full justify-start gap-3 text-primary-foreground bg-transparent hover:bg-transparent hover:opacity-70 hover:text-primary-foreground"
                         >
                             <LogOut className="h-4 w-4" />
                             {!isCollapsed && <span>Cerrar Sesión</span>}
