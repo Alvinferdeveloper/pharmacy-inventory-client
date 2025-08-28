@@ -28,7 +28,7 @@ export function SalesChart() {
             case "week":
                 return `Sem ${date.toLocaleDateString("es-ES", { day: "2-digit", month: "2-digit" })}`
             case "month":
-                return date.toLocaleDateString("es-ES", { month: "short", year: "2-digit" })
+                return date.toLocaleDateString("es-ES", { day: "2-digit", month: "2-digit", year: "2-digit" })
             default:
                 return dateString
         }
@@ -66,8 +66,8 @@ export function SalesChart() {
                             <AreaChart data={salesData}>
                                 <defs>
                                     <linearGradient id="colorTotal" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="5%" stopColor="var(--color-chart-1)" stopOpacity={0.8}/>
-                                        <stop offset="95%" stopColor="var(--color-chart-1)" stopOpacity={0}/>
+                                        <stop offset="5%" stopColor="var(--color-chart-1)" stopOpacity={0.8} />
+                                        <stop offset="95%" stopColor="var(--color-chart-1)" stopOpacity={0} />
                                     </linearGradient>
                                 </defs>
                                 <XAxis dataKey="date" tickFormatter={formatDate} axisLine={false} tickLine={false} />
@@ -84,8 +84,8 @@ export function SalesChart() {
                                     type="monotone"
                                     dataKey="total"
                                     stroke="var(--color-chart-1)"
-                                    fillOpacity={1} 
-                                    fill="url(#colorTotal)" 
+                                    fillOpacity={1}
+                                    fill="url(#colorTotal)"
                                     strokeWidth={2}
                                     dot={{ fill: "var(--color-chart-1)", strokeWidth: 2, r: 4 }}
                                     activeDot={{ r: 6, stroke: "var(--color-chart-1)", strokeWidth: 2 }}
