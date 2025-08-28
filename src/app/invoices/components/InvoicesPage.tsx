@@ -7,7 +7,7 @@ import { useDeleteInvoice } from "@/app/hooks/useDeleteInvoice"
 import { InvoicesTable } from "./InvoicesTable"
 import { InvoiceDetails } from "./InvoiceDetails"
 import { useInvoice } from "@/app/hooks/useInvoice"
-import { DeleteUserConfirmationDialog } from "../../usuarios/components/DeleteUserConfirmationDialog"
+import { DeleteInvoiceConfirmationDialog } from "./DeleteInvoiceConfirmationDialog"
 
 import { useCurrentUser } from "@/app/hooks/useCurrentUser"
 
@@ -94,7 +94,7 @@ export default function InvoicesPage() {
                 </CardContent>
             </Card>
 
-            <DeleteUserConfirmationDialog
+            <DeleteInvoiceConfirmationDialog
                 isOpen={isDeleteDialogOpen}
                 onOpenChange={setIsDeleteDialogOpen}
                 onConfirm={confirmDelete}
