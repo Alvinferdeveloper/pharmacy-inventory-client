@@ -16,7 +16,7 @@ import { AlertsDropdown } from "./AlertsDropdown";
 
 const USER_ROLES = {
     Administrator: ["dashboard", "clientes", "medicamentos", "usuarios", "categorias", "proveedores", "reportes", "invoices", 'backup-restore', 'inventory-movements'],
-    Salesman: ["clientes", "medicamentos", "categorias", "invoices"],
+    Salesman: ["clientes", "medicamentos", "categorias", "invoices", "invoices", "inventory-movements"],
     Consultant: ["dashboard", "clientes", "medicamentos", "usuarios", "categorias", "proveedores", "reportes", "invoices", 'inventory-movements'],
 }
 

@@ -68,4 +68,4 @@ function InventoryMovementsPage() {
     )
 }
 
-export default withAuth(InventoryMovementsPage, ["Administrator", "Consultant"]);
+export default withAuth(InventoryMovementsPage, ["Administrator", "Consultant", "Salesman"]);
