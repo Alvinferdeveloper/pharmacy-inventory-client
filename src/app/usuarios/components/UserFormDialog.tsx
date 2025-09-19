@@ -44,6 +44,12 @@ interface UserFormDialogProps {
 export function UserFormDialog({ isOpen, onOpenChange, onSubmit, editingUser, isSaving, error }: UserFormDialogProps) {
     const { data: roles, isLoading: isLoadingRoles } = useRoles()
 
+    const roleTranslations: { [key: string]: string } = {
+        'Administrator': 'Administrador',
+        'Salesman': 'Vendedor',
+        'Consultant': 'Consultor'
+    };
+
     const {
         register,
         handleSubmit,
@@ -120,7 +126,7 @@ export function UserFormDialog({ isOpen, onOpenChange, onSubmit, editingUser, is
                         {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
                     </div>
 
-                    
+
 
                     <div className="space-y-2">
                         <Label htmlFor="roleId">Rol</Label>
@@ -138,7 +144,7 @@ export function UserFormDialog({ isOpen, onOpenChange, onSubmit, editingUser, is
                                         ) : (
                                             roles?.map((role) => (
                                                 <SelectItem key={role.idRole} value={String(role.idRole)}>
-                                                    {role.roleName}
+                                                    {roleTranslations[role.roleName] || role.roleName}
                                                 </SelectItem>
                                             ))
                                         )}
