@@ -7,6 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Edit, Search } from "lucide-react"
 import { User } from "@/app/hooks/useUsers"
 import { Loader2, UserX, Power } from "lucide-react"
+import { roleTranslations } from "../lib/translations"
 
 
 interface UserTableProps {
@@ -24,10 +25,12 @@ export function UserTable({ users, onEdit, onToggleStatus, isTogglingStatus, tog
     const itemsPerPage = 10
 
     const filteredUsers = users.filter(
-        (user) =>
-            user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            user.identification.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            user.role.roleName.toLowerCase().includes(searchTerm.toLowerCase()),
+        (user) => {
+            const translatedRole = roleTranslations[user.role.roleName] || user.role.roleName;
+            return user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                user.identification.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                translatedRole.toLowerCase().includes(searchTerm.toLowerCase());
+        }
     )
 
     const totalPages = Math.ceil(filteredUsers.length / itemsPerPage)

@@ -21,6 +21,7 @@ import { User } from "@/app/hooks/useUsers"
 import { AddUserPayload } from "@/app/hooks/useAddUser"
 import { UpdateUserPayload } from "@/app/hooks/useUpdateUser"
 import { useRoles } from "@/app/hooks/useRoles"
+import { roleTranslations } from "../lib/translations"
 
 const userSchema = z.object({
     name: z.string().min(1, "El nombre es requerido"),
