@@ -23,7 +23,9 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 const supplierSchema = z.object({
     supplierName: z.string().min(1, "El nombre es requerido"),
     email: z.string().email("Email inválido"),
-    phone: z.string().min(1, "El teléfono es requerido"),
+    phone: z.string()
+        .min(1, "El teléfono es requerido")
+        .regex(/^\d{8}$/, { message: "El teléfono debe tener exactamente 8 dígitos numéricos" }),
     address: z.string().min(1, "La dirección es requerida"),
 })
 
@@ -92,7 +94,7 @@ export function SupplierDialog({ isOpen, onOpenChange, onSave, supplier, isSavin
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="phone">Teléfono</Label>
-                            <Input id="phone" {...register("phone")} placeholder="8888-8888" />
+                            <Input id="phone" {...register("phone")} placeholder="88888888" type="number" />
                             {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone.message}</p>}
                         </div>
                     </div>
