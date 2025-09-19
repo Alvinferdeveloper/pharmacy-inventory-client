@@ -87,7 +87,7 @@ export default function ReportsPage() {
 
             if (dataToExport.length > 0) {
                 console.log("Report Data:", dataToExport)
-                toast.success("Reporte generado exitosamente. Ver en consola.")
+                toast.success("Reporte generado exitosamente")
             } else if (triggerReport) {
                 toast.info("No se encontraron datos para el reporte seleccionado.")
             }
