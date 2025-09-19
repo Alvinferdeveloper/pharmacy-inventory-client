@@ -26,7 +26,9 @@ import { roleTranslations } from "../lib/translations"
 const userSchema = z.object({
     name: z.string().min(1, "El nombre es requerido"),
     identification: z.string().min(1, "La identificación es requerida").regex(/^\d{3}-\d{6}-\d{4}[A-Z]$/, { message: 'La identificación debe tener el formato XXX-XXXXXX-XXXXX (ej. 888-200402-1000P)' }),
-    phone: z.string().min(1, "El teléfono es requerido"),
+    phone: z.string()
+        .min(1, "El teléfono es requerido")
+        .regex(/^\d{8}$/, { message: "El teléfono debe tener exactamente 8 dígitos numéricos" }),
     email: z.string().email("Debe ser un correo electrónico válido").optional().or(z.literal("")),
     roleId: z.number().min(1, "El rol es requerido"),
 })
@@ -117,7 +119,7 @@ export function UserFormDialog({ isOpen, onOpenChange, onSubmit, editingUser, is
 
                     <div className="space-y-2">
                         <Label htmlFor="phone">Teléfono</Label>
-                        <Input id="phone" {...register("phone")} placeholder="Ingrese el número de teléfono" />
+                        <Input id="phone" {...register("phone")} placeholder="Ingrese el número de teléfono" type="number" />
                         {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone.message}</p>}
                     </div>
 
