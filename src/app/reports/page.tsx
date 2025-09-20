@@ -36,7 +36,7 @@ export default function ReportsPage() {
         reportType === "sales-by-customer" && triggerReport
     )
     const { data: salesByProductData, isLoading: isLoadingSalesByProduct, error: salesByProductError } = useSalesByProductReport(
-        { productCode: Number(productCode) },
+        { productCode: productCode },
         reportType === "sales-by-product" && triggerReport
     )
     const { data: inventoryData, isLoading: isLoadingInventory, error: inventoryError } = useInventoryReport(
@@ -238,7 +238,7 @@ export default function ReportsPage() {
                         {reportType === "sales-by-product" && (
                             <div className="space-y-2">
                                 <Label htmlFor="productCode">Código del Producto</Label>
-                                <Input id="productCode" type="number" value={productCode} onChange={(e) => setProductCode(e.target.value)} placeholder="Ingrese codigo del Producto" />
+                                <Input id="productCode" type="text" value={productCode} onChange={(e) => setProductCode(e.target.value)} placeholder="Ingrese codigo del Producto" />
                             </div>
                         )}
 

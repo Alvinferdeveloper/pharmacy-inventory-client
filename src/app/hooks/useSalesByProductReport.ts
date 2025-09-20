@@ -2,13 +2,14 @@ import { useQuery } from '@tanstack/react-query';
 import axios from '@/app/lib/axios';
 
 interface SalesByProductReportParams {
-  productCode: number;
+  productCode: string;
 }
 
 interface InvoiceDetail {
   productId: number;
   quantity: number;
   unitPrice: number;
+  code: string;
   subtotal: number;
   invoice: { idInvoice: number; date: string; customer: { customerName: string } };
   product: { productName: string };
