@@ -28,6 +28,7 @@ export function InventoryMovementsTable({ movements }: InventoryMovementsTablePr
                 <Table>
                     <TableHeader>
                         <TableRow className="bg-muted/50">
+                            <TableHead className="font-semibold">Codigo</TableHead>
                             <TableHead className="font-semibold">Producto</TableHead>
                             <TableHead className="font-semibold">Tipo</TableHead>
                             <TableHead className="font-semibold">Cantidad</TableHead>
@@ -38,6 +39,7 @@ export function InventoryMovementsTable({ movements }: InventoryMovementsTablePr
                     <TableBody>
                         {paginatedMovements.map((movement) => (
                             <TableRow key={movement.idMovement} className="hover:bg-muted/30 transition-colors">
+                                <TableCell>{movement.product.code}</TableCell>
                                 <TableCell>{movement.product.productName}</TableCell>
                                 <TableCell>
                                     <Badge variant={movement.movementType === 'in' ? 'default' : 'secondary'}>
