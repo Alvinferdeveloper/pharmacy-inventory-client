@@ -24,7 +24,7 @@ interface Invoice {
 
 const fetchSalesByCustomerReport = async (params: SalesByCustomerReportParams): Promise<Invoice[]> => {
   const { customerIdentification } = params;
-  const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/reports/sales-by-customer?=${customerIdentification}`, {
+  const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/reports/sales-by-customer?customerIdentification=${customerIdentification}`, {
     withCredentials: true
   });
   return data;
