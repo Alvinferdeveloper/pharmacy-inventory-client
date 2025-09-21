@@ -86,6 +86,7 @@ export function ReportDisplay({ reportType, data, isLoading, error }: ReportDisp
         return (
           <TableRow>
             <TableHead>Código</TableHead>
+            <TableHead>Proveedor</TableHead>
             <TableHead>Producto</TableHead>
             <TableHead>Stock Actual</TableHead>
             <TableHead>Precio Compra</TableHead>
@@ -166,6 +167,7 @@ export function ReportDisplay({ reportType, data, isLoading, error }: ReportDisp
   const renderProductsBySupplierRows = (item: any, index: number) => (
     <TableRow key={index}>
       <TableCell>{item.code}</TableCell>
+      <TableCell>{item.supplier?.supplierName}</TableCell>
       <TableCell>{item.productName}</TableCell>
       <TableCell>{item.stock}</TableCell>
       <TableCell>{item.purchasePrice}</TableCell>

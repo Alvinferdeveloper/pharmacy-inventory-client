@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import axios from '@/app/lib/axios';
 
 interface ProductsBySupplierReportParams {
-  supplierId: number;
+  supplierName: string;
 }
 
 interface Product {
@@ -20,8 +20,8 @@ interface Product {
 }
 
 const fetchProductsBySupplierReport = async (params: ProductsBySupplierReportParams): Promise<Product[]> => {
-  const { supplierId } = params;
-  const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/reports/products-by-supplier?supplierId=${supplierId}`, {
+  const { supplierName } = params;
+  const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/reports/products-by-supplier?supplierName=${supplierName}`, {
     withCredentials: true
   });
   return data;
@@ -31,6 +31,6 @@ export const useProductsBySupplierReport = (params: ProductsBySupplierReportPara
   return useQuery<Product[], Error>({
     queryKey: ['productsBySupplierReport', params],
     queryFn: () => fetchProductsBySupplierReport(params),
-    enabled: enabled && !!params.supplierId,
+    enabled: enabled && !!params.supplierName,
   });
 };

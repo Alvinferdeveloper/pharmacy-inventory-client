@@ -23,7 +23,7 @@ export default function ReportsPage() {
     const [endDate, setEndDate] = useState("")
     const [customerIdentification, setCustomerIdentification] = useState("")
     const [productCode, setProductCode] = useState("")
-    const [supplierId, setSupplierId] = useState("")
+    const [supplierName, setSupplierName] = useState("")
 
     const [triggerReport, setTriggerReport] = useState(false)
 
@@ -43,7 +43,7 @@ export default function ReportsPage() {
         reportType === "inventory" && triggerReport
     )
     const { data: productsBySupplierData, isLoading: isLoadingProductsBySupplier, error: productsBySupplierError } = useProductsBySupplierReport(
-        { supplierId: Number(supplierId) },
+        { supplierName: supplierName },
         reportType === "products-by-supplier" && triggerReport
     )
     const { data: usersData, isLoading: isLoadingUsers, error: usersError } = useUsersReport(
@@ -77,7 +77,7 @@ export default function ReportsPage() {
                     break
                 case "products-by-supplier":
                     dataToExport = productsBySupplierData || []
-                    filename = `reporte-productos-por-proveedor-${supplierId}`
+                    filename = `reporte-productos-por-proveedor-${supplierName}`
                     break
                 case "users":
                     dataToExport = usersData || []
@@ -93,7 +93,7 @@ export default function ReportsPage() {
             }
             setTriggerReport(false)
         }
-    }, [triggerReport, isLoading, error, reportType, salesByDateData, salesByCustomerData, salesByProductData, inventoryData, productsBySupplierData, usersData, startDate, endDate, customerIdentification, productCode, supplierId])
+    }, [triggerReport, isLoading, error, reportType, salesByDateData, salesByCustomerData, salesByProductData, inventoryData, productsBySupplierData, usersData, startDate, endDate, customerIdentification, productCode, supplierName])
 
     const handleGenerateReport = () => {
         setTriggerReport(true)
@@ -134,12 +134,12 @@ export default function ReportsPage() {
                     filename = `reporte-inventario`
                     break
                 case "products-by-supplier":
-                    if (!supplierId) {
-                        toast.error("Por favor, seleccione un proveedor.")
+                    if (!supplierName) {
+                        toast.error("Por favor, ingrese el nombre de un proveedor.")
                         return
                     }
-                    url += `products-by-supplier?supplierId=${supplierId}`
-                    filename = `reporte-productos-por-proveedor-${supplierId}`
+                    url += `products-by-supplier?supplierName=${supplierName}`
+                    filename = `reporte-productos-por-proveedor-${supplierName}`
                     break
                 case "users":
                     url += `users`
@@ -244,8 +244,8 @@ export default function ReportsPage() {
 
                         {reportType === "products-by-supplier" && (
                             <div className="space-y-2">
-                                <Label htmlFor="supplierId">ID Proveedor</Label>
-                                <Input id="supplierId" type="number" value={supplierId} onChange={(e) => setSupplierId(e.target.value)} placeholder="Ingrese ID del Proveedor" />
+                                <Label htmlFor="supplierName">Nombre del Proveedor</Label>
+                                <Input id="supplierName" type="text" value={supplierName} onChange={(e) => setSupplierName(e.target.value)} placeholder="Ingrese el nombre del Proveedor" />
                             </div>
                         )}
                     </div>
