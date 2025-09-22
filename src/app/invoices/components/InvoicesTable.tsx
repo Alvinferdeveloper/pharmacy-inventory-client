@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Eye, Trash2, Search } from "lucide-react"
 import { Invoice } from "@/app/hooks/useInvoices"
+import { useCurrentUser } from "@/app/hooks/useCurrentUser"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 
 interface InvoicesTableProps {
@@ -15,6 +16,7 @@ interface InvoicesTableProps {
 }
 
 export function InvoicesTable({ invoices, onView, onDelete, canManageInvoices }: InvoicesTableProps) {
+    const { data: currentUser } = useCurrentUser()
     const [searchTerm, setSearchTerm] = useState("")
     const [currentPage, setCurrentPage] = useState(1)
     const itemsPerPage = 10
@@ -69,41 +71,47 @@ export function InvoicesTable({ invoices, onView, onDelete, canManageInvoices }:
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {paginatedInvoices.map((invoice) => (
-                                <TableRow key={invoice.idInvoice} className="hover:bg-muted/30 transition-colors">
-                                    <TableCell className="font-mono text-sm">{invoice.idInvoice}</TableCell>
-                                    <TableCell>{formatDate(invoice.date)}</TableCell>
-                                    <TableCell>{invoice.customer.customerName}</TableCell>
-                                    <TableCell>{invoice.user.name}</TableCell>
-                                    <TableCell className="font-medium">{formatPrice(invoice.total)}</TableCell>
-                                    {canManageInvoices && (
-                                        <TableCell className="text-right">
-                                            <div className="flex gap-2 justify-end">
-                                                <Tooltip>
-                                                    <TooltipTrigger asChild>
-                                                        <Button size="sm" variant="outline" onClick={() => onView(invoice.idInvoice)}>
-                                                            <Eye className="h-4 w-4" />
-                                                        </Button>
-                                                    </TooltipTrigger>
-                                                    <TooltipContent>
-                                                        <p>Ver Detalle</p>
-                                                    </TooltipContent>
-                                                </Tooltip>
-                                                <Tooltip>
-                                                    <TooltipTrigger asChild>
-                                                        <Button size="sm" variant="destructive" onClick={() => onDelete(invoice.idInvoice)}>
-                                                            <Trash2 className="h-4 w-4" />
-                                                        </Button>
-                                                    </TooltipTrigger>
-                                                    <TooltipContent>
-                                                        <p>Eliminar Factura</p>
-                                                    </TooltipContent>
-                                                </Tooltip>
-                                            </div>
-                                        </TableCell>
-                                    )}
-                                </TableRow>
-                            ))}
+                            {paginatedInvoices.map((invoice) => {
+                                const isOwner = invoice.user.idUser === currentUser?.idUser
+                                const isAdmin = currentUser?.roles.includes("Administrator")
+                                const canDelete = isAdmin || isOwner
+
+                                return (
+                                    <TableRow key={invoice.idInvoice} className="hover:bg-muted/30 transition-colors">
+                                        <TableCell className="font-mono text-sm">{invoice.idInvoice}</TableCell>
+                                        <TableCell>{formatDate(invoice.date)}</TableCell>
+                                        <TableCell>{invoice.customer.customerName}</TableCell>
+                                        <TableCell>{invoice.user.name}</TableCell>
+                                        <TableCell className="font-medium">{formatPrice(invoice.total)}</TableCell>
+                                        {canManageInvoices && (
+                                            <TableCell className="text-right">
+                                                <div className="flex gap-2 justify-end">
+                                                    <Tooltip>
+                                                        <TooltipTrigger asChild>
+                                                            <Button size="sm" variant="outline" onClick={() => onView(invoice.idInvoice)}>
+                                                                <Eye className="h-4 w-4" />
+                                                            </Button>
+                                                        </TooltipTrigger>
+                                                        <TooltipContent>
+                                                            <p>Ver Detalle</p>
+                                                        </TooltipContent>
+                                                    </Tooltip>
+                                                    <Tooltip>
+                                                        <TooltipTrigger asChild>
+                                                            <Button size="sm" variant="destructive" onClick={() => onDelete(invoice.idInvoice)} disabled={!canDelete}>
+                                                                <Trash2 className="h-4 w-4" />
+                                                            </Button>
+                                                        </TooltipTrigger>
+                                                        <TooltipContent>
+                                                            <p>{canDelete ? "Eliminar Factura" : "No tienes permiso para eliminar esta factura"}</p>
+                                                        </TooltipContent>
+                                                    </Tooltip>
+                                                </div>
+                                            </TableCell>
+                                        )}
+                                    </TableRow>
+                                )
+                            })}
                         </TableBody>
                     </Table>
                 </div>
