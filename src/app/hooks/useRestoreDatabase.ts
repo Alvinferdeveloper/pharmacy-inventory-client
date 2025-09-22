@@ -1,37 +1,21 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import axios from '@/app/lib/axios';
-import { toast } from "sonner"
 import { AxiosError } from 'axios'
-import { useEffect } from 'react'
 
-const restoreDatabase = async (fileName: string) => {
-  const { data } = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/database/restore`, { fileName });
+const restoreDatabase = async (file: File) => {
+  const formData = new FormData();
+  formData.append('file', file);
+
+  const { data } = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/database/restore`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
   return data;
 };
 
 export const useRestoreDatabase = () => {
-  const queryClient = useQueryClient();
-
-  const mutation = useMutation<any, AxiosError, string>({
+  return useMutation<any, AxiosError, File>({
     mutationFn: restoreDatabase,
-    onSuccess: () => {
-      queryClient.invalidateQueries(); // Invalidate all queries to refetch data
-      toast.success("Base de datos restaurada exitosamente");
-    },
-    onError: (error: AxiosError) => {
-      console.log(error)
-      error.message = "Ocurrió un error inesperado al restaurar la base de datos"
-    }
   });
-
-  useEffect(() => {
-    if (mutation.error) {
-      const timer = setTimeout(() => {
-        mutation.reset();
-      }, 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [mutation.error, mutation.reset]);
-
-  return mutation;
 };

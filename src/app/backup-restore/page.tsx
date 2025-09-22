@@ -3,27 +3,38 @@
 import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { Loader2, Download, Upload, AlertTriangle, Database, CheckCircle } from "lucide-react"
+import { Loader2, Download, Upload, AlertTriangle, Database } from "lucide-react"
 import { useBackupDatabase } from "@/app/hooks/useBackupDatabase"
 import { useRestoreDatabase } from "@/app/hooks/useRestoreDatabase"
-import { useGetBackups } from "@/app/hooks/useGetBackups"
 import { withAuth } from "@/app/components/withAuth"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog"
 import { toast } from "sonner"
 
 function BackupRestorePage() {
     const [isRestoreDialogOpen, setIsRestoreDialogOpen] = useState(false)
-    const [selectedBackup, setSelectedBackup] = useState<string | null>(null)
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const [backupDescription, setBackupDescription] = useState("");
 
     const { mutate: backupDatabase, isPending: isBackingUp } = useBackupDatabase()
     const { mutate: restoreDatabase, isPending: isRestoring, error: restoreError, reset: resetRestoreError } = useRestoreDatabase()
-    const { data: backups, isLoading: isLoadingBackups, error: backupsError } = useGetBackups()
 
-    const handleBackup = () => {
-        backupDatabase(undefined, {
-            onSuccess: () => {
-                toast.success("Respaldo creado exitosamente!")
+    const handleBackup = (description?: string) => {
+        backupDatabase({ description }, {
+            onSuccess: (response) => {
+                const header = response.headers['content-disposition'];
+                const fileName = header ? header.split('filename=')[1].replace(/"/g, '') : `backup-${new Date().toISOString()}.sql`;
+                const blob = new Blob([response.data], { type: 'application/sql' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = fileName;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                a.remove();
+                toast.success("Respaldo descargado exitosamente!")
             },
             onError: (error) => {
                 toast.error(error.message || "Error al crear el respaldo.")
@@ -31,17 +42,12 @@ function BackupRestorePage() {
         })
     }
 
-    const handleRestoreClick = (fileName: string) => {
-        setSelectedBackup(fileName)
-        setIsRestoreDialogOpen(true)
-    }
-
     const confirmRestore = () => {
-        if (selectedBackup) {
-            restoreDatabase(selectedBackup, {
+        if (selectedFile) {
+            restoreDatabase(selectedFile, {
                 onSuccess: () => {
                     setIsRestoreDialogOpen(false)
-                    setSelectedBackup(null)
+                    setSelectedFile(null)
                     toast.success("Base de datos restaurada exitosamente!")
                 },
                 onError: (error) => {
@@ -54,7 +60,6 @@ function BackupRestorePage() {
     const handleRestoreDialogChange = (isOpen: boolean) => {
         setIsRestoreDialogOpen(isOpen)
         if (!isOpen) {
-            setSelectedBackup(null)
             resetRestoreError()
         }
     }
@@ -77,9 +82,16 @@ function BackupRestorePage() {
                         <CardTitle className="text-xl font-semibold text-gray-800">Crear Respaldo</CardTitle>
                         <CardDescription>Genera una nueva copia de seguridad de la base de datos en este momento.</CardDescription>
                     </CardHeader>
-                    <CardContent className="p-6 flex flex-col items-center justify-center h-full">
+                    <CardContent className="p-6 flex flex-col items-center justify-center h-full space-y-4">
+                        <Input
+                            type="text"
+                            placeholder="Descripción (opcional)"
+                            value={backupDescription}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setBackupDescription(e.target.value)}
+                            className="w-full max-w-xs"
+                        />
                         <Button
-                            onClick={handleBackup}
+                            onClick={() => handleBackup(backupDescription)}
                             disabled={isBackingUp}
                             className="w-full max-w-xs bg-green-600 hover:bg-green-700 text-white py-3 text-lg rounded-lg shadow-md transition-all duration-200 transform hover:scale-105"
                         >
@@ -102,45 +114,29 @@ function BackupRestorePage() {
                                 Restaurar la base de datos sobreescribirá **permanentemente** todos los datos actuales. Esta acción no se puede deshacer. Procede con extrema precaución.
                             </AlertDescription>
                         </Alert>
-                        <div className="space-y-4">
-                            {isLoadingBackups && (
-                                <div className="flex justify-center items-center py-4">
-                                    <Loader2 className="w-6 h-6 animate-spin text-primary" />
-                                    <span className="ml-2 text-muted-foreground">Cargando respaldos...</span>
-                                </div>
-                            )}
-                            {backupsError && (
-                                <Alert variant="destructive">
-                                    <AlertDescription>{backupsError.message || "Error al cargar los respaldos."}</AlertDescription>
-                                </Alert>
-                            )}
-                            {!isLoadingBackups && backups && backups.length > 0 ? (
-                                <ul className="space-y-3 max-h-60 overflow-y-auto pr-2">
-                                    {backups.map((backup) => (
-                                        <li key={backup} className="flex flex-col md:flex-row items-start md:items-center justify-between p-3 border border-gray-200 rounded-md bg-white shadow-sm gap-4 md:gap-0">
-                                            <div className="flex items-center gap-3">
-                                                <Database className="h-5 w-5 text-gray-600" />
-                                                <span className="font-medium text-gray-700">{backup}</span>
-                                            </div>
-                                            <Button
-                                                size="sm"
-                                                onClick={() => handleRestoreClick(backup)}
-                                                disabled={isRestoring}
-                                                className="bg-blue-600 hover:bg-blue-700 text-white rounded-md px-4 py-2 transition-all duration-200 transform hover:scale-105 w-full md:w-auto"
-                                            >
-                                                {isRestoring && selectedBackup === backup ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Upload className="w-4 h-4 mr-2" />}
-                                                {isRestoring && selectedBackup === backup ? "Restaurando..." : "Restaurar"}
-                                            </Button>
-                                        </li>
-                                    ))}
-                                </ul>
-                            ) : !isLoadingBackups && !backupsError && (
-                                <div className="text-center py-8 text-muted-foreground">
-                                    <Database className="w-12 h-12 mx-auto mb-4 text-gray-400" />
-                                    <p className="text-lg">No hay respaldos disponibles.</p>
-                                    <p className="text-sm">Crea uno para empezar a gestionar tus copias de seguridad.</p>
-                                </div>
-                            )}
+                        <div className="space-y-4 flex flex-col items-center">
+                            <div className="w-full p-4 border-2 border-dashed rounded-lg text-center">
+                                <input
+                                    type="file"
+                                    accept=".sql"
+                                    onChange={(e) => setSelectedFile(e.target.files ? e.target.files[0] : null)}
+                                    className="text-sm text-grey-500 
+                                    file:mr-4 file:py-2 file:px-4
+                                    file:rounded-full file:border-0
+                                    file:text-sm file:font-semibold
+                                    file:bg-violet-50 file:text-violet-700
+                                    hover:file:bg-violet-100"
+                                />
+                                {selectedFile && <p className="mt-2 text-sm text-muted-foreground">Archivo seleccionado: {selectedFile.name}</p>}
+                            </div>
+                            <Button
+                                onClick={() => setIsRestoreDialogOpen(true)}
+                                disabled={!selectedFile || isRestoring}
+                                className="w-full max-w-xs bg-blue-600 hover:bg-blue-700 text-white py-3 text-lg rounded-lg shadow-md transition-all duration-200 transform hover:scale-105"
+                            >
+                                {isRestoring ? <Loader2 className="w-5 h-5 animate-spin mr-2" /> : <Upload className="w-5 h-5 mr-2" />}
+                                {isRestoring ? "Restaurando..." : "Restaurar desde Archivo"}
+                            </Button>
                             {restoreError && (
                                 <Alert variant="destructive" className="mt-4">
                                     <AlertDescription>{restoreError.message || "Ocurrió un error al restaurar la base de datos."}</AlertDescription>
@@ -156,7 +152,7 @@ function BackupRestorePage() {
                     <DialogHeader>
                         <DialogTitle className="text-xl font-bold">Confirmar Restauración</DialogTitle>
                         <DialogDescription className="text-base">
-                            ¿Está absolutamente seguro de que desea restaurar la base de datos desde el archivo <strong>{selectedBackup}</strong>? Esta acción es **irreversible** y sobreescribirá todos los datos actuales.
+                            ¿Está absolutamente seguro de que desea restaurar la base de datos desde el archivo <strong>{selectedFile?.name}</strong>? Esta acción es **irreversible** y sobreescribirá todos los datos actuales.
                         </DialogDescription>
                     </DialogHeader>
                     <DialogFooter className="flex justify-end gap-3 mt-6">

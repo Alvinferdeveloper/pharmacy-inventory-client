@@ -1,26 +1,16 @@
-
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import axios from '@/app/lib/axios';
-import { toast } from "sonner"
+import { AxiosError } from 'axios';
 
-const backupDatabase = async () => {
-  const { data } = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/database/backup`);
-  return data;
+const backupDatabase = async ({ description }: { description?: string }) => {
+  const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/database/backup`, { description }, {
+    responseType: 'blob',
+  });
+  return response;
 };
 
 export const useBackupDatabase = () => {
-  const queryClient = useQueryClient();
-
-  const mutation = useMutation({
+  return useMutation<any, AxiosError, { description?: string }>({ // Update the type here
     mutationFn: backupDatabase,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['backups'] });
-      toast.success("Respaldo creado exitosamente");
-    },
-    onError: (error: any) => {
-      toast.error("Ocurrió un error al crear el respaldo");
-    }
   });
-
-  return mutation;
 };
