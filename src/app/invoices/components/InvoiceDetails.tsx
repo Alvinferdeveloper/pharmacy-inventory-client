@@ -72,9 +72,9 @@ export function InvoiceDetails({ invoice, onBack }: InvoiceDetailsProps) {
                             </h3>
                             <div className="space-y-1 text-sm">
                                 <p className="font-semibold">{invoice.customer.customerName}</p>
-                                <p className="text-gray-600">{invoice.customer.address}</p>
-                                <p className="text-gray-600">ID: {invoice.customer.identification}</p>
-                                <p className="text-gray-600">Tel: {invoice.customer.phone}</p>
+                                <p className="text-gray-600">Dirección: {invoice.customer.address}</p>
+                                <p className="text-gray-600">Identificación: {invoice.customer.identification}</p>
+                                <p className="text-gray-600">Teléfono: {invoice.customer.phone}</p>
                             </div>
                         </div>
                         <div className="border border-gray-200 p-4 rounded">
