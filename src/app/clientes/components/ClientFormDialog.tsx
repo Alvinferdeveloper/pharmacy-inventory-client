@@ -28,6 +28,7 @@ export function ClientFormDialog({ isOpen, onOpenChange, onSubmit, editingClient
     handleSubmit,
     formState: { errors },
     reset,
+    clearErrors,
   } = useForm<ClientSchema>({
     resolver: zodResolver(clientSchema),
   })
@@ -44,10 +45,17 @@ export function ClientFormDialog({ isOpen, onOpenChange, onSubmit, editingClient
           address: "",
         })
       }
+      clearErrors(); // Clear errors when opening
     } else {
-      reset()
+      reset({
+        customerName: "",
+        identification: "",
+        phone: "",
+        address: "",
+      }, { keepErrors: false }); // Ensure errors are cleared when closing
+      clearErrors(); // Explicitly clear errors when closing
     }
-  }, [isOpen, editingClient, reset])
+  }, [isOpen, editingClient, reset, clearErrors])
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
