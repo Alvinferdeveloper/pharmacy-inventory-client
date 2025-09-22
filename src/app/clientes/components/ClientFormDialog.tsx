@@ -86,6 +86,7 @@ export function ClientFormDialog({ isOpen, onOpenChange, onSubmit, editingClient
               id="phone"
               {...register("phone")}
               placeholder="Número de teléfono de 8 dígitos"
+              type="number"
             />
             {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone.message}</p>}
           </div>
