@@ -30,7 +30,7 @@ export const useAddUser = () => {
     },
     onError: (error: AxiosError) => {
       if (error.status == 409) {
-        error.message = "Un usuario con estaS identificación ya existe"
+        error.message = "Un usuario con esta identificación ya existe"
         return;
       }
       error.message = "Ocurrió un error inesperado al agregar el usuario"
