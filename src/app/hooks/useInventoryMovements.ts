@@ -4,12 +4,12 @@ import axios from '@/app/lib/axios';
 import { Product } from './useProducts';
 
 export interface InventoryMovement {
-    idMovement: number;
-    movementType: 'in' | 'out';
-    quantity: number;
-    date: string;
-    reason: string;
-    product: Product;
+  idMovement: number;
+  movementType: 'in' | 'out';
+  quantity: number;
+  date: string;
+  reason: string;
+  product: Product;
 }
 
 const getInventoryMovements = async (productCode?: string, startDate?: string, endDate?: string): Promise<InventoryMovement[]> => {
@@ -29,6 +29,5 @@ export const useInventoryMovements = (productCode?: string, startDate?: string, 
   return useQuery<InventoryMovement[], Error>({
     queryKey: ['inventoryMovements', productCode, startDate, endDate],
     queryFn: () => getInventoryMovements(productCode, startDate, endDate),
-    enabled: !!productCode || (!!startDate && !!endDate),
   });
 };
