@@ -25,7 +25,7 @@ import { roleTranslations } from "../lib/translations"
 
 const userSchema = z.object({
     name: z.string().min(1, "El nombre es requerido"),
-    identification: z.string().min(1, "La identificación es requerida").regex(/^\d{3}-\d{6}-\d{4}[A-Z]$/, { message: 'La identificación debe tener el formato XXX-XXXXXX-XXXXX (ej. 888-200402-1000P)' }),
+    identification: z.string().min(1, "La identificación es requerida").regex(/^\d{3}-\d{6}-\d{4}[A-Z]$/, { message: 'La identificación debe tener el formato XXX-XXXXXX-XXXXX (ej. 654-200810-3000P)' }),
     phone: z.string()
         .min(1, "El teléfono es requerido")
         .regex(/^\d{8}$/, { message: "El teléfono debe tener exactamente 8 dígitos numéricos" }),
