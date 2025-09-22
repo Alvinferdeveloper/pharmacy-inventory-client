@@ -45,7 +45,7 @@ export function ClientFormDialog({ isOpen, onOpenChange, onSubmit, editingClient
         })
       }
     } else {
-        reset()
+      reset()
     }
   }, [isOpen, editingClient, reset])
 
@@ -62,7 +62,7 @@ export function ClientFormDialog({ isOpen, onOpenChange, onSubmit, editingClient
           <DialogTitle>{editingClient ? "Editar Cliente" : "Registrar Nuevo Cliente"}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <div>
+          <div className="space-y-2">
             <Label htmlFor="customerName">Nombre Completo</Label>
             <Input
               id="customerName"
@@ -71,7 +71,7 @@ export function ClientFormDialog({ isOpen, onOpenChange, onSubmit, editingClient
             />
             {errors.customerName && <p className="text-red-500 text-xs mt-1">{errors.customerName.message}</p>}
           </div>
-          <div>
+          <div className="space-y-2">
             <Label htmlFor="identification">Identificación</Label>
             <Input
               id="identification"
@@ -80,7 +80,7 @@ export function ClientFormDialog({ isOpen, onOpenChange, onSubmit, editingClient
             />
             {errors.identification && <p className="text-red-500 text-xs mt-1">{errors.identification.message}</p>}
           </div>
-          <div>
+          <div className="space-y-2">
             <Label htmlFor="phone">Teléfono</Label>
             <Input
               id="phone"
@@ -89,7 +89,7 @@ export function ClientFormDialog({ isOpen, onOpenChange, onSubmit, editingClient
             />
             {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone.message}</p>}
           </div>
-          <div>
+          <div className="space-y-2">
             <Label htmlFor="address">Dirección</Label>
             <Input
               id="address"

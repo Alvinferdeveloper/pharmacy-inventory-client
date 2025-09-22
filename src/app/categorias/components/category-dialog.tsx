@@ -75,7 +75,7 @@ export function CategoryDialog({ isOpen, onOpenChange, onSubmit, editingCategory
                     </DialogDescription>
                 </DialogHeader>
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                    <div>
+                    <div className="space-y-2">
                         <Label htmlFor="categoryName">Nombre de la Categoría</Label>
                         <Input
                             id="categoryName"
@@ -84,7 +84,7 @@ export function CategoryDialog({ isOpen, onOpenChange, onSubmit, editingCategory
                         />
                         {errors.categoryName && <p className="text-red-500 text-xs mt-1">{errors.categoryName.message}</p>}
                     </div>
-                    <div>
+                    <div className="space-y-2">
                         <Label htmlFor="description">Descripción</Label>
                         <Textarea
                             id="description"
