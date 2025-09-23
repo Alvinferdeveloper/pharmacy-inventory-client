@@ -17,6 +17,7 @@ export const useDeleteInvoice = () => {
     mutationFn: deleteInvoice,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['invoices'] });
+      queryClient.invalidateQueries({ queryKey: ['myInvoices'] });
       toast.success("Factura eliminada exitosamente")
     },
     onError: (error: any) => {

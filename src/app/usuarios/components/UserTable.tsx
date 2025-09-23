@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Edit, Search } from "lucide-react"
+import { Edit, Search, Trash2 } from "lucide-react"
 import { User } from "@/app/hooks/useUsers"
 import { Loader2, UserX, Power } from "lucide-react"
 import { roleTranslations } from "../lib/translations"
@@ -14,13 +14,14 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 interface UserTableProps {
     users: User[]
     onEdit: (user: User) => void
-    onToggleStatus: (id: number, isActive: boolean) => void
+    onToggleStatus: (id: number) => void // No longer needs isActive param
+    onDelete: (id: number) => void // New prop for delete
     isTogglingStatus: boolean
     togglingUserId: number | null
     canManageUsers: boolean | undefined
 }
 
-export function UserTable({ users, onEdit, onToggleStatus, isTogglingStatus, togglingUserId, canManageUsers }: UserTableProps) {
+export function UserTable({ users, onEdit, onToggleStatus, onDelete, isTogglingStatus, togglingUserId, canManageUsers }: UserTableProps) {
     const [searchTerm, setSearchTerm] = useState("")
     const [currentPage, setCurrentPage] = useState(1)
     const itemsPerPage = 10
@@ -74,7 +75,9 @@ export function UserTable({ users, onEdit, onToggleStatus, isTogglingStatus, tog
                         <TableBody>
                             {paginatedUsers.map((user) => {
                                 const roleStatus = getRoleStatus(user.role.roleName)
-                                const isActive = user.deletedAt === null
+                                const isSoftDeleted = !!user.deletedAt;
+                                const isCurrentlyActive = user.isActive && !isSoftDeleted;
+
                                 return (
                                     <TableRow key={user.idUser} className="hover:bg-muted/30 transition-colors">
                                         <TableCell className="font-medium">{user.name}</TableCell>
@@ -85,44 +88,65 @@ export function UserTable({ users, onEdit, onToggleStatus, isTogglingStatus, tog
                                             </Badge>
                                         </TableCell>
                                         <TableCell>
-                                            <Badge variant={isActive ? "default" : "destructive"}>
-                                                {isActive ? "Activo" : "Inactivo"}
+                                            <Badge variant={isSoftDeleted ? "outline" : (isCurrentlyActive ? "default" : "destructive")}>
+                                                {isSoftDeleted ? "Eliminado" : (isCurrentlyActive ? "Activo" : "Inactivo")}
                                             </Badge>
                                         </TableCell>
                                         {canManageUsers && (
                                             <TableCell className="text-right">
                                                 <div className="flex items-center justify-end gap-2">
-                                                    <Tooltip>
-                                                        <TooltipTrigger asChild>
-                                                            <Button variant="outline" size="icon" onClick={() => onEdit(user)}>
-                                                                <Edit className="h-4 w-4" />
-                                                            </Button>
-                                                        </TooltipTrigger>
-                                                        <TooltipContent>
-                                                            <p>Editar Usuario</p>
-                                                        </TooltipContent>
-                                                    </Tooltip>
-                                                    <Tooltip>
-                                                        <TooltipTrigger asChild>
-                                                            <Button
-                                                                variant={isActive ? "destructive" : "default"}
-                                                                size="icon"
-                                                                onClick={() => onToggleStatus(user.idUser, !isActive)}
-                                                                disabled={isTogglingStatus && togglingUserId === user.idUser}
-                                                            >
-                                                                {isTogglingStatus && togglingUserId === user.idUser ? (
-                                                                    <Loader2 className="h-4 w-4 animate-spin" />
-                                                                ) : isActive ? (
-                                                                    <UserX className="h-4 w-4" />
-                                                                ) : (
-                                                                    <Power className="h-4 w-4" />
-                                                                )}
-                                                            </Button>
-                                                        </TooltipTrigger>
-                                                        <TooltipContent>
-                                                            {isActive ? <p>Desactivar Usuario</p> : <p>Activar Usuario</p>}
-                                                        </TooltipContent>
-                                                    </Tooltip>
+                                                    {!isSoftDeleted && (
+                                                        <Tooltip>
+                                                            <TooltipTrigger asChild>
+                                                                <Button variant="outline" size="icon" onClick={() => onEdit(user)}>
+                                                                    <Edit className="h-4 w-4" />
+                                                                </Button>
+                                                            </TooltipTrigger>
+                                                            <TooltipContent>
+                                                                <p>Editar Usuario</p>
+                                                            </TooltipContent>
+                                                        </Tooltip>
+                                                    )}
+                                                    {!isSoftDeleted && (
+                                                        <Tooltip>
+                                                            <TooltipTrigger asChild>
+                                                                <Button
+                                                                    variant={isCurrentlyActive ? "destructive" : "default"}
+                                                                    size="icon"
+                                                                    onClick={() => onToggleStatus(user.idUser)}
+                                                                    disabled={isTogglingStatus && togglingUserId === user.idUser}
+                                                                >
+                                                                    {isTogglingStatus && togglingUserId === user.idUser ? (
+                                                                        <Loader2 className="h-4 w-4 animate-spin" />
+                                                                    ) : isCurrentlyActive ? (
+                                                                        <UserX className="h-4 w-4" />
+                                                                    ) : (
+                                                                        <Power className="h-4 w-4" />
+                                                                    )}
+                                                                </Button>
+                                                            </TooltipTrigger>
+                                                            <TooltipContent>
+                                                                {isCurrentlyActive ? <p>Desactivar Usuario</p> : <p>Activar Usuario</p>}
+                                                            </TooltipContent>
+                                                        </Tooltip>
+                                                    )}
+                                                    {!isSoftDeleted && (
+                                                        <Tooltip>
+                                                            <TooltipTrigger asChild>
+                                                                <Button
+                                                                    variant="outline"
+                                                                    size="icon"
+                                                                    onClick={() => onDelete(user.idUser)}
+                                                                    disabled={isTogglingStatus && togglingUserId === user.idUser} // Disable if status is being toggled
+                                                                >
+                                                                    <Trash2 className="h-4 w-4" />
+                                                                </Button>
+                                                            </TooltipTrigger>
+                                                            <TooltipContent>
+                                                                <p>Eliminar Usuario (Irreversible)</p>
+                                                            </TooltipContent>
+                                                        </Tooltip>
+                                                    )}
                                                 </div>
                                             </TableCell>
                                         )}
