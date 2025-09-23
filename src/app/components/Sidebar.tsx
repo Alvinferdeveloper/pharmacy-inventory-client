@@ -14,6 +14,12 @@ import { useLogout } from "@/app/hooks/useLogout";
 
 import { AlertsDropdown } from "./AlertsDropdown";
 
+const roleTranslations: { [key: string]: string } = {
+    "Administrator": "Administrador",
+    "Salesman": "Vendedor",
+    "Consultant": "Consultor",
+};
+
 const USER_ROLES = {
     Administrator: ["dashboard", "clientes", "medicamentos", "usuarios", "categorias", "proveedores", "reportes", "invoices", 'backup-restore', 'inventory-movements'],
     Salesman: ["clientes", "medicamentos", "categorias", "invoices", "invoices", "inventory-movements"],
@@ -85,7 +91,7 @@ export function Sidebar({ children }: SidebarProps) {
                                 <p className="text-sm text-sidebar-foreground/60">{user.identification}</p>
                                 <p className="text-xs text-sidebar-foreground/60">{user.phone}</p>
                                 <p className="text-xs text-sidebar-foreground/60">{user.email}</p>
-                                <p className="text-xs text-sidebar-foreground/40 capitalize">{user.roles.join(", ")}</p>
+                                <p className="text-xs text-sidebar-foreground/40 capitalize">{user.roles.map(role => roleTranslations[role] || role).join(", ")}</p>
                             </div>
                         )}
                         <div className="flex items-center flex-col gap-2 ml-auto">
